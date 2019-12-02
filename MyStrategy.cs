@@ -1,5 +1,8 @@
 #region Usings
 
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using AiCup2019.Model;
 
@@ -9,46 +12,62 @@ namespace AiCup2019
 {
     public class MyStrategy
     {
-        private Game Game { get; set; }
-        private Debug Debug { get; set; }
+        private class Orientation
+        {
+            public class LootItem
+            {
+                public LootItem(LootBox item, WeaponType? type = null)
+                {
+                    Item = item;
+                    Distance = GetDistance(MyUnit.Position, item.Position);
+                    WeaponType = type;
+                }
 
-        #region MyUnit
+                public LootBox Item { get; }
+                public double Distance { get; }
+                public WeaponType? WeaponType { get; }
+            }
 
-        private Unit MyUnit { get; set; }
+            #region Enemy
+
+            public Unit? NearestEnemy { get; set; }
+            public Mine? NearestMine { get; set; }
+
+            #endregion
+
+            #region Loot
+
+            public int LootItems { get; set; }
+            public LootItem NearestWeapon { get; set; }
+            public LootItem NearestPistol { get; set; }
+            public LootItem NearestRifle { get; set; }
+            public LootItem NearestRLauncher { get; set; }
+            public LootItem NearestHealth { get; set; }
+            public LootItem NearestMineL { get; set; }
+
+            #endregion
+        }
+
+        public MyStrategy()
+        {
+            Around = new Orientation();
+        }
+
+        private static Game Game { get; set; }
+        private static Debug Debug { get; set; }
+        private Orientation Around { get; }
+        private static Unit MyUnit { get; set; }
         private int MyHealth { get; set; }
-        private bool HasWeapon { get; set; }
+        private bool MyUnitHasWeapon { get; set; }
         private Weapon? MyWeapon { get; set; }
-        private Vec2Double Target { get; set; }
-        private Vec2Double Aim { get; set; }
+        private Vec2Double MyUnitTarget { get; set; }
+        private Vec2Double MyUnitAim { get; set; }
         private bool Jump { get; set; }
-
-        #endregion
-
-        #region Enemy
-
-        private Unit NearestEnemy { get; set; }
-        private Mine NearestMine { get; set; }
-
-        #endregion
-
-        #region Loot
-
-        private bool LootIsActual { get; set; }
-        private int LootItems { get; set; }
-        private LootBox NearestWeapon { get; set; }
-        private WeaponType NearestWeaponType { get; set; }
-        private LootBox? PistolLoot { get; set; }
-        private LootBox? RifleLoot { get; set; }
-        private LootBox? RLauncherLoot { get; set; }
-        private LootBox? HealthLoot { get; set; }
-        private LootBox? MineLoot { get; set; }
-
-        #endregion
 
         public UnitAction GetAction(Unit unit, Game game, Debug debug)
         {
             NextTick(unit, game, debug);
-            ScanLootIfNotActual();
+            ScanLoot();
             ScanNearestEnemy();
             ScanNearestMine();
 
@@ -64,82 +83,99 @@ namespace AiCup2019
             Game = game;
             Debug = debug;
 
-            HasWeapon = MyUnit.Weapon.HasValue;
-            if (HasWeapon)
+            MyUnitHasWeapon = MyUnit.Weapon.HasValue;
+            if (MyUnitHasWeapon)
             {
                 MyWeapon = MyUnit.Weapon;
             }
 
             MyHealth = MyUnit.Health;
 
-            LootIsActual = LootItems == game.LootBoxes.Length;
+            Around.LootItems = game.LootBoxes.Length;
         }
 
-        private void ScanLootIfNotActual()
+        private void ScanLoot()
         {
-            if (!LootIsActual)
-            {
-                Parallel.ForEach(Game.LootBoxes,
-                                 (lootBox) =>
+            Parallel.ForEach(Game.LootBoxes,
+                             (lootBox) =>
+                             {
+                                 if (lootBox.Item is Item.Weapon weapon)
                                  {
-                                     if (lootBox.Item is Item.Weapon weapon)
+                                     switch (weapon.WeaponType)
                                      {
-                                         if (weapon.WeaponType == WeaponType.Pistol)
-                                         {
-                                             if (PistolLoot.HasValue && GetDistance(MyUnit.Position, lootBox.Position) < GetDistance(MyUnit.Position, PistolLoot.Value.Position))
+                                         case WeaponType.Pistol:
+                                             if (Around.NearestPistol == null || GetDistance(MyUnit.Position, lootBox.Position) < GetDistance(MyUnit.Position, Around.NearestPistol.Item.Position))
                                              {
-                                                 PistolLoot = lootBox;
+                                                 Around.NearestPistol = new Orientation.LootItem(lootBox, WeaponType.Pistol);
                                              }
-                                         }
-                                         else if (weapon.WeaponType == WeaponType.AssaultRifle)
-                                         {
-                                             if (RifleLoot.HasValue && GetDistance(MyUnit.Position, lootBox.Position) < GetDistance(MyUnit.Position, RifleLoot.Value.Position))
-                                             {
-                                                 RifleLoot = lootBox;
-                                             }
-                                         }
-                                         else if (weapon.WeaponType == WeaponType.RocketLauncher)
-                                         {
-                                             if (RLauncherLoot.HasValue && GetDistance(MyUnit.Position, lootBox.Position) < GetDistance(MyUnit.Position, RLauncherLoot.Value.Position))
-                                             {
-                                                 RLauncherLoot = lootBox;
-                                             }
-                                         }
-                                     }
-                                     else if (lootBox.Item is Item.HealthPack)
-                                     {
-                                         if (HealthLoot.HasValue && GetDistance(MyUnit.Position, lootBox.Position) < GetDistance(MyUnit.Position, HealthLoot.Value.Position))
-                                         {
-                                             HealthLoot = lootBox;
-                                         }
-                                     }
-                                     else if (lootBox.Item is Item.Mine)
-                                     {
-                                         if (MineLoot.HasValue && GetDistance(MyUnit.Position, lootBox.Position) < GetDistance(MyUnit.Position, MineLoot.Value.Position))
-                                         {
-                                             MineLoot = lootBox;
-                                         }
-                                     }
-                                 });
 
-                LootItems = Game.LootBoxes.Length;
+                                             break;
+                                         case WeaponType.AssaultRifle:
+                                             if (Around.NearestRifle == null || GetDistance(MyUnit.Position, lootBox.Position) < GetDistance(MyUnit.Position, Around.NearestRifle.Item.Position))
+                                             {
+                                                 Around.NearestRifle = new Orientation.LootItem(lootBox, WeaponType.AssaultRifle);
+                                             }
+
+                                             break;
+                                         case WeaponType.RocketLauncher:
+                                             if (Around.NearestRLauncher == null || GetDistance(MyUnit.Position, lootBox.Position) < GetDistance(MyUnit.Position, Around.NearestRLauncher.Item.Position))
+                                             {
+                                                 Around.NearestRLauncher = new Orientation.LootItem(lootBox, WeaponType.RocketLauncher);
+                                             }
+
+                                             break;
+                                         default:
+                                             throw new ArgumentOutOfRangeException();
+                                     }
+                                 }
+                                 else if (lootBox.Item is Item.HealthPack)
+                                 {
+                                     if (Around.NearestHealth == null || GetDistance(MyUnit.Position, lootBox.Position) < GetDistance(MyUnit.Position, Around.NearestHealth.Item.Position))
+                                     {
+                                         Around.NearestHealth = new Orientation.LootItem(lootBox);
+                                     }
+                                 }
+                                 else if (lootBox.Item is Item.Mine)
+                                 {
+                                     if (Around.NearestMineL == null || GetDistance(MyUnit.Position, lootBox.Position) < GetDistance(MyUnit.Position, Around.NearestMineL.Item.Position))
+                                     {
+                                         Around.NearestMineL = new Orientation.LootItem(lootBox);
+                                     }
+                                 }
+                             });
+
+            Around.LootItems = Game.LootBoxes.Length;
+
+            var weapons = new List<Orientation.LootItem>();
+            if (Around.NearestPistol != null)
+            {
+                weapons.Add(Around.NearestPistol);
             }
+
+            if (Around.NearestRifle != null)
+            {
+                weapons.Add(Around.NearestRifle);
+            }
+
+            if (Around.NearestRLauncher != null)
+            {
+                weapons.Add(Around.NearestRLauncher);
+            }
+
+            Around.NearestWeapon = weapons.OrderByDescending(x => x.Distance).Last();
         }
 
         private void ScanNearestEnemy()
         {
             Parallel.ForEach(Game.Units,
-                             (other) =>
+                             (unit) =>
                              {
-                                 if (other.PlayerId != MyUnit.PlayerId)
+                                 if (unit.PlayerId != MyUnit.PlayerId)
                                  {
-                                     if (GetDistance(MyUnit.Position, other.Position) < GetDistance(MyUnit.Position, NearestEnemy.Position))
+                                     if (!Around.NearestEnemy.HasValue || GetDistance(MyUnit.Position, unit.Position) < GetDistance(MyUnit.Position, Around.NearestEnemy.Value.Position))
                                      {
-                                         NearestEnemy = other;
-                                         return;
+                                         Around.NearestEnemy = unit;
                                      }
-
-                                     NearestEnemy = other;
                                  }
                              });
         }
@@ -149,58 +185,36 @@ namespace AiCup2019
             Parallel.ForEach(Game.Mines,
                              (mine) =>
                              {
-                                 if (GetDistance(MyUnit.Position, mine.Position) < GetDistance(MyUnit.Position, NearestMine.Position))
+                                 if (!Around.NearestMine.HasValue || GetDistance(MyUnit.Position, mine.Position) < GetDistance(MyUnit.Position, Around.NearestMine.Value.Position))
                                  {
-                                     NearestMine = mine;
-                                     return;
+                                     Around.NearestMine = mine;
                                  }
-
-                                 NearestMine = mine;
                              });
         }
 
         private void ChooseBehavior()
         {
-            if (!HasWeapon)
+            if (!MyUnitHasWeapon)
             {
-                var nearestPistolDist = PistolLoot.HasValue
-                                            ? GetDistance(MyUnit.Position, PistolLoot.Value.Position)
-                                            : 999;
-                var nearestRifleDist = RifleLoot.HasValue
-                                           ? GetDistance(MyUnit.Position, RifleLoot.Value.Position)
-                                           : 999;
-                var nearestRLauncherDist = RLauncherLoot.HasValue
-                                               ? GetDistance(MyUnit.Position, RLauncherLoot.Value.Position)
-                                               : 999;
-
-                if (PistolLoot.HasValue ||
-                    RifleLoot.HasValue)
-                {
-                    NearestWeapon = nearestPistolDist < nearestRifleDist
-                                        ? PistolLoot.Value
-                                        : RifleLoot.Value;
-                    NearestWeaponType = ((Item.Weapon) NearestWeapon.Item).WeaponType;
-                }
-
-                SetTarget(NearestWeapon.Position);
+                SetTarget(Around.NearestEnemy.Value.Position);
             }
             else
             {
-                SetTarget(NearestEnemy.Position);
+                SetTarget(Around.NearestEnemy.Value.Position);
             }
 
-            SetAim(NearestEnemy.Position);
+            SetAim(Around.NearestEnemy.Value.Position);
             SetJump();
         }
 
         private void SetTarget(Vec2Double target)
         {
-            Target = target;
+            MyUnitTarget = target;
         }
 
         private void SetAim(Vec2Double target)
         {
-            Aim = new Vec2Double(NearestEnemy.Position.X - MyUnit.Position.X, NearestEnemy.Position.Y - MyUnit.Position.Y);
+            MyUnitAim = new Vec2Double(Around.NearestEnemy.Value.Position.X - MyUnit.Position.X, Around.NearestEnemy.Value.Position.Y - MyUnit.Position.Y);
             // Aim = target;
         }
 
@@ -228,8 +242,8 @@ namespace AiCup2019
                                        Velocity = 99,
                                        Jump = Jump,
                                        JumpDown = !Jump,
-                                       Aim = Aim,
-                                       Shoot = true,
+                                       Aim = MyUnitAim,
+                                       Shoot = false,
                                        SwapWeapon = true,
                                        PlantMine = false
                                    };
@@ -243,11 +257,19 @@ namespace AiCup2019
         {
             // Debug.Draw(new CustomData.Log("Target pos X: " + Target.X));
             // Debug.Draw(new CustomData.Log("Target pos Y: " + Target.Y));
-            Debug.Draw(new CustomData.Log("Loot items: " + LootItems));
+            // Debug.Draw(new CustomData.Log("Loot items: " + Around.LootItems));
             // Debug.Draw(new CustomData.Log("Loot is actual: " + LootIsActual));
-            // Debug.Draw(new CustomData.Log("Health: " + MyHealth));
-            Debug.Draw(new CustomData.Log("Nearest weapon: " + NearestWeaponType));
-            Debug.Draw(new CustomData.Log($"{(HasWeapon ? MyWeapon.Value.Typ.ToString() : "NO WEAPON")}"));
+            var d = GetDistance(MyUnit.Position,Around.NearestEnemy.Value.Position);
+            Debug.Draw(new CustomData.Log(d.ToString()));
+            Debug.Draw(new CustomData.Log($"NEAR WEAPON {(Around.NearestWeapon != null ? Around.NearestWeapon.WeaponType.ToString() : "-")} | " +
+                                          $"POS {(Around.NearestWeapon != null ? $"{Around.NearestWeapon.Item.Position.X.ToString()}/{Around.NearestWeapon.Item.Position.Y.ToString()}/{Around.NearestWeapon.Distance}" : "-")} | " +
+                                          $"PISTOL {(Around.NearestPistol != null ? $"{Around.NearestPistol.Item.Position.X.ToString()}/{Around.NearestPistol.Item.Position.Y.ToString()}/{Around.NearestPistol.Distance}" : "-")} | " +
+                                          $"RIFLE {(Around.NearestRifle != null ? $"{Around.NearestRifle.Item.Position.X.ToString()}/{Around.NearestRifle.Item.Position.Y.ToString()}/{Around.NearestRifle.Distance}" : "-")} | " +
+                                          $"RL {(Around.NearestRLauncher != null ? $"{Around.NearestRLauncher.Item.Position.X.ToString()}/{Around.NearestRLauncher.Item.Position.Y.ToString()}/{Around.NearestRLauncher.Distance}" : "-")} | " +
+                                          $"HEALTH {(Around.NearestHealth != null ? $"{Around.NearestHealth.Item.Position.X.ToString()}/{Around.NearestHealth.Item.Position.Y.ToString()}/{Around.NearestHealth.Distance}" : "-")} | " +
+                                          $"MINE {(Around.NearestMineL != null ? $"{Around.NearestMineL.Item.Position.X.ToString()}/{Around.NearestMineL.Item.Position.Y.ToString()}/{Around.NearestMineL.Distance}" : "-")} | " +
+                                          $""));
+            // Debug.Draw(new CustomData.Log($"{(MyUnitHasWeapon ? MyWeapon.Value.Typ.ToString() : "NO WEAPON")}"));
         }
 
         private static double GetDistance(Vec2Double a, Vec2Double b)
