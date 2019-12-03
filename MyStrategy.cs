@@ -58,9 +58,9 @@ namespace AiCup2019
 
             #region Enemy
 
-            public List<EnemyUnit> AllEnemiesUnits { get; set; }
+            public List<EnemyUnit> Enemies { get; set; }
             public EnemyUnit NearestEnemy { get; set; } = new EnemyUnit(new Unit());
-            public List<EnemyMine> AllEnemiesMines { get; set; }
+            public List<EnemyMine> PlantedMines { get; set; }
             public EnemyMine NearestMine { get; set; } = new EnemyMine(new Mine());
 
             #endregion
@@ -68,7 +68,7 @@ namespace AiCup2019
             #region Loot
 
             public int LootItems { get; set; }
-            public List<LootItem> AllLoots { get; set; }
+            public List<LootItem> AllLoot { get; set; }
             public LootItem NearestWeapon { get; set; } = new LootItem(new LootBox());
             public LootItem NearestPistol { get; set; } = new LootItem(new LootBox());
             public LootItem NearestRifle { get; set; } = new LootItem(new LootBox());
@@ -98,15 +98,14 @@ namespace AiCup2019
         public UnitAction GetAction(Unit unit, Game game, Debug debug)
         {
             NextTick(unit, game, debug);
-            ScanLoot();
-            ScanNearestEnemy();
-            ScanNearestMine();
+            SeeAround();
 
             ChooseBehavior();
 
             DebugWrite();
             return DoAction();
         }
+
 
         private void NextTick(Unit unit, Game game, Debug debug)
         {
@@ -125,9 +124,16 @@ namespace AiCup2019
             Around.LootItems = game.LootBoxes.Length;
         }
 
+        private void SeeAround()
+        {
+            ScanLoot();
+            ScanNearestEnemy();
+            ScanNearestMine();
+        }
+
         private void ScanLoot()
         {
-            Around.AllLoots = new List<Orientation.LootItem>();
+            Around.AllLoot = new List<Orientation.LootItem>();
             Parallel.ForEach(Game.LootBoxes,
                              (lootBox) =>
                              {
@@ -136,13 +142,13 @@ namespace AiCup2019
                                      switch (weapon.WeaponType)
                                      {
                                          case WeaponType.Pistol:
-                                             Around.AllLoots.Add(new Orientation.LootItem(lootBox, WeaponType.Pistol));
+                                             Around.AllLoot.Add(new Orientation.LootItem(lootBox, WeaponType.Pistol));
                                              break;
                                          case WeaponType.AssaultRifle:
-                                             Around.AllLoots.Add(new Orientation.LootItem(lootBox, WeaponType.AssaultRifle));
+                                             Around.AllLoot.Add(new Orientation.LootItem(lootBox, WeaponType.AssaultRifle));
                                              break;
                                          case WeaponType.RocketLauncher:
-                                             Around.AllLoots.Add(new Orientation.LootItem(lootBox, WeaponType.RocketLauncher));
+                                             Around.AllLoot.Add(new Orientation.LootItem(lootBox, WeaponType.RocketLauncher));
                                              break;
                                          default:
                                              throw new ArgumentOutOfRangeException();
@@ -150,44 +156,44 @@ namespace AiCup2019
                                  }
                                  else if (lootBox.Item is Item.HealthPack)
                                  {
-                                     Around.AllLoots.Add(new Orientation.LootItem(lootBox));
+                                     Around.AllLoot.Add(new Orientation.LootItem(lootBox));
                                  }
                                  else if (lootBox.Item is Item.Mine)
                                  {
-                                     Around.AllLoots.Add(new Orientation.LootItem(lootBox));
+                                     Around.AllLoot.Add(new Orientation.LootItem(lootBox));
                                  }
                              });
 
             Around.LootItems = Game.LootBoxes.Length;
 
-            Around.NearestWeapon = Around.AllLoots.Where(l => l.WeaponType != null).OrderByDescending(x => x.Distance).LastOrDefault();
-            Around.NearestPistol = Around.AllLoots.Where(l => l.WeaponType == WeaponType.Pistol).OrderByDescending(x => x.Distance).LastOrDefault();
-            Around.NearestRifle = Around.AllLoots.Where(l => l.WeaponType == WeaponType.AssaultRifle).OrderByDescending(x => x.Distance).LastOrDefault();
-            Around.NearestRLauncher = Around.AllLoots.Where(l => l.WeaponType == WeaponType.RocketLauncher).OrderByDescending(x => x.Distance).LastOrDefault();
-            Around.NearestHealth = Around.AllLoots.Where(l => l.Item.Item is Item.HealthPack).OrderByDescending(x => x.Distance).LastOrDefault();
-            Around.NearestMineL = Around.AllLoots.Where(l => l.Item.Item is Item.Mine).OrderByDescending(x => x.Distance).LastOrDefault();
+            Around.NearestWeapon = Around.AllLoot.Where(l => l.WeaponType != null).OrderByDescending(x => x.Distance).LastOrDefault();
+            Around.NearestPistol = Around.AllLoot.Where(l => l.WeaponType == WeaponType.Pistol).OrderByDescending(x => x.Distance).LastOrDefault();
+            Around.NearestRifle = Around.AllLoot.Where(l => l.WeaponType == WeaponType.AssaultRifle).OrderByDescending(x => x.Distance).LastOrDefault();
+            Around.NearestRLauncher = Around.AllLoot.Where(l => l.WeaponType == WeaponType.RocketLauncher).OrderByDescending(x => x.Distance).LastOrDefault();
+            Around.NearestHealth = Around.AllLoot.Where(l => l.Item.Item is Item.HealthPack).OrderByDescending(x => x.Distance).LastOrDefault();
+            Around.NearestMineL = Around.AllLoot.Where(l => l.Item.Item is Item.Mine).OrderByDescending(x => x.Distance).LastOrDefault();
         }
 
         private void ScanNearestEnemy()
         {
-            Around.AllEnemiesUnits = new List<Orientation.EnemyUnit>();
+            Around.Enemies = new List<Orientation.EnemyUnit>();
             Parallel.ForEach(Game.Units,
                              (unit) =>
                              {
                                  if (unit.PlayerId != MyUnit.PlayerId)
                                  {
-                                     Around.AllEnemiesUnits.Add(new Orientation.EnemyUnit(unit));
+                                     Around.Enemies.Add(new Orientation.EnemyUnit(unit));
                                  }
                              });
-            Around.NearestEnemy = Around.AllEnemiesUnits.OrderByDescending(u => u.Distance).LastOrDefault();
+            Around.NearestEnemy = Around.Enemies.OrderByDescending(u => u.Distance).LastOrDefault();
         }
 
         private void ScanNearestMine()
         {
-            Around.AllEnemiesMines = new List<Orientation.EnemyMine>();
+            Around.PlantedMines = new List<Orientation.EnemyMine>();
             Parallel.ForEach(Game.Mines,
-                             (mine) => { Around.AllEnemiesMines.Add(new Orientation.EnemyMine(mine)); });
-            Around.NearestMine = Around.AllEnemiesMines.OrderByDescending(m => m.Distance).LastOrDefault();
+                             (mine) => { Around.PlantedMines.Add(new Orientation.EnemyMine(mine)); });
+            Around.NearestMine = Around.PlantedMines.OrderByDescending(m => m.Distance).LastOrDefault();
         }
 
         private void ChooseBehavior()
@@ -233,21 +239,16 @@ namespace AiCup2019
 
         private UnitAction DoAction()
         {
-            var action = new UnitAction();
-
-            var findWeaponAction = new UnitAction
-                                   {
-                                       Velocity = 99,
-                                       Jump = Jump,
-                                       JumpDown = !Jump,
-                                       Aim = MyUnitAim,
-                                       Shoot = false,
-                                       SwapWeapon = true,
-                                       PlantMine = false
-                                   };
-
-
-            action = findWeaponAction;
+            var action = new UnitAction
+                         {
+                             Velocity = 99,
+                             Jump = Jump,
+                             JumpDown = !Jump,
+                             Aim = MyUnitAim,
+                             Shoot = false,
+                             SwapWeapon = true,
+                             PlantMine = false
+                         };
             return action;
         }
 
