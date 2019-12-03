@@ -63,14 +63,28 @@ namespace AiCup2019
             }
         }
 
+        public class EnemyBullet
+        {
+            public Bullet Bullet { get; }
+            public double Distance { get; }
+
+            public EnemyBullet(Bullet bullet)
+            {
+                Bullet = bullet;
+                Distance = GetDistance(Me.Unit.Position, bullet.Position);
+            }
+        }
+
         public class World
         {
             #region Enemy
 
             public List<EnemyUnit> Enemies { get; set; }
-            public EnemyUnit NearestEnemy { get; set; } = new EnemyUnit(new Unit());
+            public EnemyUnit NearestEnemy { get; set; }
             public List<EnemyMine> PlantedMines { get; set; }
-            public EnemyMine NearestMine { get; set; } = new EnemyMine(new Mine());
+            public EnemyMine NearestMine { get; set; }
+            public List<EnemyBullet> Bullets { get; set; }
+            public EnemyBullet NearestBullet { get; set; }
 
             #endregion
 
@@ -98,8 +112,8 @@ namespace AiCup2019
 
         private static Game Game { get; set; }
         private static Debug Debug { get; set; }
-        private World Around { get; }
         private static MyUnit Me { get; set; }
+        private World Around { get; }
 
         public UnitAction GetAction(Unit unit, Game game, Debug debug)
         {
@@ -117,8 +131,6 @@ namespace AiCup2019
             Game = game;
             Debug = debug;
             Me.Unit = unit;
-
-            Around.LootItems = game.LootBoxes.Length;
         }
 
         private void SeeAround()
@@ -126,6 +138,7 @@ namespace AiCup2019
             ScanLoot();
             ScanNearestEnemy();
             ScanNearestMine();
+            ScanBullets();
         }
 
         private void ScanLoot()
@@ -193,6 +206,20 @@ namespace AiCup2019
             Around.NearestMine = Around.PlantedMines.OrderByDescending(m => m.Distance).LastOrDefault();
         }
 
+        private void ScanBullets()
+        {
+            Around.Bullets = new List<EnemyBullet>();
+            Parallel.ForEach(Game.Bullets,
+                             (bullet) =>
+                             {
+                                 if (bullet.PlayerId != Me.Unit.PlayerId)
+                                 {
+                                     Around.Bullets.Add(new EnemyBullet(bullet));
+                                 }
+                             });
+            Around.NearestBullet = Around.Bullets.OrderByDescending(b => b.Distance).LastOrDefault();
+        }
+
         private void ChooseBehavior()
         {
             if (!Me.HasWeapon)
@@ -252,20 +279,22 @@ namespace AiCup2019
 
         private void DebugWrite()
         {
-            Debug.Draw(new CustomData.Log($"HEALTH: {Me.Health} | " +
-                                          $"HAS WEAPON: {Me.HasWeapon} | " +
-                                          $"WEAPON TYPE: {(Me.HasWeapon ? $"{Me.Weapon.Value.Typ}" : "-")}"));
-            // Debug.Draw(new CustomData.Log($"NEAR WEAPON {(Around.NearestWeapon != null ? Around.NearestWeapon.WeaponType.ToString() : "-")} | " +
-            //                               $"POS {(Around.NearestWeapon != null ? $"{Around.NearestWeapon.Item.Position.X}/{Around.NearestWeapon.Item.Position.Y.ToString()}/{(int) Around.NearestWeapon.Distance}" : "-")} | " +
-            //                               $"PISTOL {(Around.NearestPistol != null ? $"{Around.NearestPistol.Item.Position.X.ToString()}/{Around.NearestPistol.Item.Position.Y.ToString()}/{(int) Around.NearestPistol.Distance}" : "-")} | " +
-            //                               $"RIFLE {(Around.NearestRifle != null ? $"{Around.NearestRifle.Item.Position.X.ToString()}/{Around.NearestRifle.Item.Position.Y.ToString()}/{(int) Around.NearestRifle.Distance}" : "-")} | " +
-            //                               $"RL {(Around.NearestRLauncher != null ? $"{Around.NearestRLauncher.Item.Position.X.ToString()}/{Around.NearestRLauncher.Item.Position.Y.ToString()}/{(int) Around.NearestRLauncher.Distance}" : "-")} | " +
-            //                               $"HEALTH {(Around.NearestHealth != null ? $"{Around.NearestHealth.Item.Position.X.ToString()}/{Around.NearestHealth.Item.Position.Y.ToString()}/{(int) Around.NearestHealth.Distance}" : "-")} | " +
-            //                               $"L-MINE {(Around.NearestMineL != null ? $"{Around.NearestMineL.Item.Position.X.ToString()}/{Around.NearestMineL.Item.Position.Y.ToString()}/{(int) Around.NearestMineL.Distance}" : "-")} | " +
-            //                               $"ENEMY {(Around.NearestEnemy != null ? $"{Around.NearestEnemy.Unit.Position.X.ToString()}/{Around.NearestEnemy.Unit.Position.Y.ToString()}/{(int) Around.NearestEnemy.Distance}" : "-")} | " +
-            //                               $"E-MINE {(Around.NearestMine != null ? $"{Around.NearestMine.Mine.Position.X.ToString()}/{Around.NearestMine.Mine.Position.Y.ToString()}/{(int) Around.NearestMine.Distance}" : "-")} | " +
-            //                               $""));
-            // Debug.Draw(new CustomData.Log($"{(MyUnitHasWeapon ? MyWeapon.Value.Typ.ToString() : "NO WEAPON")}"));
+            Debug.Draw(new CustomData.Log($"BULLETS: {Around.Bullets.Count} | " +
+                                          $"NEAREST BULLET: {(Around.NearestBullet != null ? $"{(int) Around.NearestBullet.Bullet.Position.X}/{(int) Around.NearestBullet.Bullet.Position.Y}/{(int) Around.NearestBullet.Distance}" : "-")} | " +
+                                          // $"ENEMY {(Around.NearestEnemy != null ? $"{(int) Around.NearestEnemy.Unit.Position.X}/{(int) Around.NearestEnemy.Unit.Position.Y}/{(int) Around.NearestEnemy.Distance}" : "-")} | " +
+                                          // $"E-MINE {(Around.NearestMine != null ? $"{(int) Around.NearestMine.Mine.Position.X}/{(int) Around.NearestMine.Mine.Position.Y}/{(int) Around.NearestMine.Distance}" : "-")} | " +
+                                          // $"NEAR WEAPON {(Around.NearestWeapon != null ? Around.NearestWeapon.WeaponType.ToString() : "-")} | " +
+                                          // $"POS {(Around.NearestWeapon != null ? $"{(int) Around.NearestWeapon.Item.Position.X}/{(int) Around.NearestWeapon.Item.Position.Y}/{(int) Around.NearestWeapon.Distance}" : "-")} | " +
+                                          // $"PISTOL {(Around.NearestPistol != null ? $"{(int) Around.NearestPistol.Item.Position.X}/{(int) Around.NearestPistol.Item.Position.Y}/{(int) Around.NearestPistol.Distance}" : "-")} | " +
+                                          // $"RIFLE {(Around.NearestRifle != null ? $"{(int) Around.NearestRifle.Item.Position.X}/{(int) Around.NearestRifle.Item.Position.Y}/{(int) Around.NearestRifle.Distance}" : "-")} | " +
+                                          // $"RL {(Around.NearestRLauncher != null ? $"{(int) Around.NearestRLauncher.Item.Position.X}/{(int) Around.NearestRLauncher.Item.Position.Y}/{(int) Around.NearestRLauncher.Distance}" : "-")} | " +
+                                          // $"HEALTH {(Around.NearestHealth != null ? $"{(int) Around.NearestHealth.Item.Position.X}/{(int) Around.NearestHealth.Item.Position.Y}/{(int) Around.NearestHealth.Distance}" : "-")} | " +
+                                          // $"L-MINE {(Around.NearestMineL != null ? $"{(int) Around.NearestMineL.Item.Position.X}/{(int) Around.NearestMineL.Item.Position.Y}/{(int) Around.NearestMineL.Distance}" : "-")} | " +
+                                          // $"ENEMY {(Around.NearestEnemy != null ? $"{(int) Around.NearestEnemy.Unit.Position.X}/{(int) Around.NearestEnemy.Unit.Position.Y}/{(int) Around.NearestEnemy.Distance}" : "-")} | " +
+                                          // $"E-MINE {(Around.NearestMine != null ? $"{(int) Around.NearestMine.Mine.Position.X}/{(int) Around.NearestMine.Mine.Position.Y}/{(int) Around.NearestMine.Distance}" : "-")} | " +
+                                          // $"HAS WEAPON: {Me.HasWeapon} | " +
+                                          // $"WEAPON TYPE: {(Me.HasWeapon ? $"{Me.Weapon.Value.Typ}" : "-")} | " +
+                                          ""));
         }
 
         private static double GetDistance(Vec2Double a, Vec2Double b)
