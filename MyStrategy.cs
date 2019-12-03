@@ -43,6 +43,9 @@ namespace AiCup2019
         {
             public Unit Unit { get; }
             public double Distance { get; }
+            public int Health => Unit.Health;
+            public bool HasWeapon => Weapon != null;
+            public Weapon? Weapon => Unit.Weapon;
 
             public EnemyUnit(Unit unit)
             {
@@ -279,7 +282,8 @@ namespace AiCup2019
 
         private void DebugWrite()
         {
-            Debug.Draw(new CustomData.Log($"BULLETS: {Around.Bullets.Count} | " +
+            Debug.Draw(new CustomData.Log($"" +
+                                          $"BULLETS: {Around.Bullets.Count} | " +
                                           $"NEAREST BULLET: {(Around.NearestBullet != null ? $"{(int) Around.NearestBullet.Bullet.Position.X}/{(int) Around.NearestBullet.Bullet.Position.Y}/{(int) Around.NearestBullet.Distance}" : "-")} | " +
                                           // $"ENEMY {(Around.NearestEnemy != null ? $"{(int) Around.NearestEnemy.Unit.Position.X}/{(int) Around.NearestEnemy.Unit.Position.Y}/{(int) Around.NearestEnemy.Distance}" : "-")} | " +
                                           // $"E-MINE {(Around.NearestMine != null ? $"{(int) Around.NearestMine.Mine.Position.X}/{(int) Around.NearestMine.Mine.Position.Y}/{(int) Around.NearestMine.Distance}" : "-")} | " +
@@ -292,8 +296,12 @@ namespace AiCup2019
                                           // $"L-MINE {(Around.NearestMineL != null ? $"{(int) Around.NearestMineL.Item.Position.X}/{(int) Around.NearestMineL.Item.Position.Y}/{(int) Around.NearestMineL.Distance}" : "-")} | " +
                                           // $"ENEMY {(Around.NearestEnemy != null ? $"{(int) Around.NearestEnemy.Unit.Position.X}/{(int) Around.NearestEnemy.Unit.Position.Y}/{(int) Around.NearestEnemy.Distance}" : "-")} | " +
                                           // $"E-MINE {(Around.NearestMine != null ? $"{(int) Around.NearestMine.Mine.Position.X}/{(int) Around.NearestMine.Mine.Position.Y}/{(int) Around.NearestMine.Distance}" : "-")} | " +
-                                          // $"HAS WEAPON: {Me.HasWeapon} | " +
-                                          // $"WEAPON TYPE: {(Me.HasWeapon ? $"{Me.Weapon.Value.Typ}" : "-")} | " +
+                                          // $"ME HAS WEAPON: {Me.HasWeapon} | " +
+                                          // $"MY WEAPON TYPE: {(Me.HasWeapon ? $"{Me.Weapon.Value.Typ}" : "-")} | " +
+                                          $"MY HEALTH: {Me.Health} | " +
+                                          $"NENEMY HEALTH: {Around.NearestEnemy.Health} | " +
+                                          $"NENEMY HAS WEAPON: {Around.NearestEnemy.HasWeapon} | " +
+                                          $"NENEMY WEAPON TYPE: {(Around.NearestEnemy.HasWeapon ? $"{Around.NearestEnemy.Weapon.Value.Typ}" : "-")} | " +
                                           ""));
         }
 
