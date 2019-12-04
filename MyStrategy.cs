@@ -302,17 +302,16 @@ namespace AiCup2019
 
         private void SetJump()
         {
-            Me.Jump = true;
-            // Jump = Target.Y > MyUnit.Position.Y;
-            // if (Target.X > MyUnit.Position.X && Game.Level.Tiles[(int) (MyUnit.Position.X + 1)][(int) MyUnit.Position.Y] == Tile.Wall)
-            // {
-            //     Jump = true;
-            // }
-            //
-            // if (Target.X < MyUnit.Position.X && Game.Level.Tiles[(int) (MyUnit.Position.X - 1)][(int) MyUnit.Position.Y] == Tile.Wall)
-            // {
-            //     Jump = true;
-            // }
+            if (Me.OnLadder
+                || Around.NextTileR == Tile.Wall
+                || Around.NextTileL == Tile.Wall)
+            {
+                Me.Jump = true;
+            }
+            else
+            {
+                Me.Jump = false;
+            }
         }
 
         private UnitAction DoAction()
@@ -321,9 +320,9 @@ namespace AiCup2019
                          {
                              Velocity = Const.MaxVelocityR,
                              Jump = Me.Jump,
-                             JumpDown = !Me.Jump,
+                             JumpDown = false,
                              Aim = Me.Aim,
-                             Shoot = true,
+                             Shoot = false,
                              SwapWeapon = true,
                              PlantMine = false,
                              Reload = false
@@ -353,11 +352,11 @@ namespace AiCup2019
                                           //$"Nearest enemy health: {Around.NearestEnemy.Health} | " +
                                           //$"Nearest enemy has weapon: {Around.NearestEnemy.HasWeapon} | " +
                                           //$"Nearest enemy weapon type: {(Around.NearestEnemy.HasWeapon ? $"{Around.NearestEnemy.Weapon.Value.Typ}" : "-")} | " +
-                                          $"My magazine ammo: {(Me.HasWeapon ? $"{Me.Weapon.Value.Magazine}" : "-")} | " +
-                                          // $"My tile Top: {Around.NextTileT} | " +
-                                          // $"My tile Bottom: {Around.NextTileB} | " +
-                                          // $"My tile Left: {Around.NextTileL} | " +
-                                          // $"My tile Right: {Around.NextTileR} | " +
+                                          // $"My magazine ammo: {(Me.HasWeapon ? $"{Me.Weapon.Value.Magazine}" : "-")} | " +
+                                          $"My tile Top: {Around.NextTileT} | " +
+                                          $"My tile Bottom: {Around.NextTileB} | " +
+                                          $"My tile Left: {Around.NextTileL} | " +
+                                          $"My tile Right: {Around.NextTileR} | " +
                                           //$"Nearest enemy tile Top: {Around.NearestEnemy.NextTileT} | " +
                                           //$"Nearest enemy tile Bottom: {Around.NearestEnemy.NextTileB} | " +
                                           //$"Nearest enemy tile Left: {Around.NearestEnemy.NextTileL} | " +
@@ -365,8 +364,8 @@ namespace AiCup2019
                                           // $"Me.OnGround: {Me.OnGround} | " +
                                           // $"Me.OnLadder: {Me.OnLadder} | " +
                                           // $"Me.Stand: {Me.Stand} | " +
-                                          // $"Me.SeeRight: {Me.SeeRight} | " +
-                                          // $"Me.SeeLeft: {Me.SeeLeft} | " +
+                                          $"Me.SeeRight: {Me.SeeRight} | " +
+                                          $"Me.SeeLeft: {Me.SeeLeft} | " +
                                           //$"Me.Mines: {Me.Mines} | " +
                                           //$"Me.CanPlantMine: {Me.CanPlantMine} | " +
                                           ""));
