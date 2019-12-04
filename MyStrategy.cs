@@ -22,6 +22,9 @@ namespace AiCup2019
             public int FullPistolAmmo { get; } = 8;
             public int FullRifleAmmo { get; } = 20;
             public int FullRLAmmo { get; } = 1;
+            public int PistolDamage { get; } = 20;
+            public int RifleDamage { get; } = 5;
+            public int RLDamage { get; } = 30;
         }
 
         public class MyUnit
@@ -64,6 +67,16 @@ namespace AiCup2019
             public int Health => Unit.Health;
             public bool HasWeapon => Weapon != null;
             public Weapon? Weapon => Unit.Weapon;
+            public bool SeeRight => Unit.WalkedRight;
+            public bool SeeLeft => !Unit.WalkedRight;
+            public bool Stand => Unit.Stand;
+            public bool OnGround => Unit.OnGround;
+            public bool OnLadder => Unit.OnLadder;
+            public JumpState JumpState => Unit.JumpState;
+            public Tile NextTileT { get; set; }
+            public Tile NextTileB { get; set; }
+            public Tile NextTileR { get; set; }
+            public Tile NextTileL { get; set; }
 
             public EnemyUnit(Unit unit)
             {
@@ -88,6 +101,9 @@ namespace AiCup2019
         {
             public Bullet Bullet { get; }
             public double Distance { get; }
+            public WeaponType WeaponType => Bullet.WeaponType;
+            public int Damage => Bullet.Damage;
+            public Vec2Double Velocity => Bullet.Velocity;
 
             public EnemyBullet(Bullet bullet)
             {
@@ -122,10 +138,14 @@ namespace AiCup2019
 
             #endregion
 
+            #region TilesAround
+
             public Tile NextTileT { get; set; }
             public Tile NextTileB { get; set; }
             public Tile NextTileR { get; set; }
             public Tile NextTileL { get; set; }
+
+            #endregion
         }
 
         #endregion
@@ -172,10 +192,15 @@ namespace AiCup2019
 
         private void ScanTiles()
         {
-            Around.NextTileR = Game.Level.Tiles[(int) (Me.Unit.Position.X - 1)][(int) Me.Unit.Position.Y];
-            Around.NextTileL = Game.Level.Tiles[(int) (Me.Unit.Position.X + 1)][(int) Me.Unit.Position.Y];
+            Around.NextTileR = Game.Level.Tiles[(int) (Me.Unit.Position.X + 1)][(int) Me.Unit.Position.Y];
+            Around.NextTileL = Game.Level.Tiles[(int) (Me.Unit.Position.X - 1)][(int) Me.Unit.Position.Y];
             Around.NextTileT = Game.Level.Tiles[(int) Me.Unit.Position.X][(int) Me.Unit.Position.Y + 1];
             Around.NextTileB = Game.Level.Tiles[(int) Me.Unit.Position.X][(int) Me.Unit.Position.Y - 1];
+
+            Around.NearestEnemy.NextTileR = Game.Level.Tiles[(int) (Around.NearestEnemy.Unit.Position.X + 1)][(int) Around.NearestEnemy.Unit.Position.Y];
+            Around.NearestEnemy.NextTileL = Game.Level.Tiles[(int) (Around.NearestEnemy.Unit.Position.X - 1)][(int) Around.NearestEnemy.Unit.Position.Y];
+            Around.NearestEnemy.NextTileT = Game.Level.Tiles[(int) Around.NearestEnemy.Unit.Position.X][(int) Around.NearestEnemy.Unit.Position.Y + 1];
+            Around.NearestEnemy.NextTileB = Game.Level.Tiles[(int) Around.NearestEnemy.Unit.Position.X][(int) Around.NearestEnemy.Unit.Position.Y - 1];
         }
 
         private void ScanLoot()
@@ -298,10 +323,10 @@ namespace AiCup2019
                              Jump = Me.Jump,
                              JumpDown = !Me.Jump,
                              Aim = Me.Aim,
-                             Shoot = false,
+                             Shoot = true,
                              SwapWeapon = true,
                              PlantMine = false,
-                             Reload = true
+                             Reload = false
                          };
             return action;
         }
@@ -309,37 +334,41 @@ namespace AiCup2019
         private void DebugWrite()
         {
             Debug.Draw(new CustomData.Log($"" +
-                                          //$"BULLETS: {Around.Bullets.Count} | " +
-                                          //$"NEAREST BULLET: {(Around.NearestBullet != null ? $"{(int) Around.NearestBullet.Bullet.Position.X}/{(int) Around.NearestBullet.Bullet.Position.Y}/{(int) Around.NearestBullet.Distance}" : "-")} | " +
-                                          // $"ENEMY {(Around.NearestEnemy != null ? $"{(int) Around.NearestEnemy.Unit.Position.X}/{(int) Around.NearestEnemy.Unit.Position.Y}/{(int) Around.NearestEnemy.Distance}" : "-")} | " +
-                                          // $"E-MINE {(Around.NearestMine != null ? $"{(int) Around.NearestMine.Mine.Position.X}/{(int) Around.NearestMine.Mine.Position.Y}/{(int) Around.NearestMine.Distance}" : "-")} | " +
-                                          // $"NEAR WEAPON {(Around.NearestWeapon != null ? Around.NearestWeapon.WeaponType.ToString() : "-")} | " +
-                                          // $"POS {(Around.NearestWeapon != null ? $"{(int) Around.NearestWeapon.Item.Position.X}/{(int) Around.NearestWeapon.Item.Position.Y}/{(int) Around.NearestWeapon.Distance}" : "-")} | " +
-                                          // $"PISTOL {(Around.NearestPistol != null ? $"{(int) Around.NearestPistol.Item.Position.X}/{(int) Around.NearestPistol.Item.Position.Y}/{(int) Around.NearestPistol.Distance}" : "-")} | " +
-                                          // $"RIFLE {(Around.NearestRifle != null ? $"{(int) Around.NearestRifle.Item.Position.X}/{(int) Around.NearestRifle.Item.Position.Y}/{(int) Around.NearestRifle.Distance}" : "-")} | " +
-                                          // $"RL {(Around.NearestRLauncher != null ? $"{(int) Around.NearestRLauncher.Item.Position.X}/{(int) Around.NearestRLauncher.Item.Position.Y}/{(int) Around.NearestRLauncher.Distance}" : "-")} | " +
-                                          // $"HEALTH {(Around.NearestHealth != null ? $"{(int) Around.NearestHealth.Item.Position.X}/{(int) Around.NearestHealth.Item.Position.Y}/{(int) Around.NearestHealth.Distance}" : "-")} | " +
-                                          // $"L-MINE {(Around.NearestMineL != null ? $"{(int) Around.NearestMineL.Item.Position.X}/{(int) Around.NearestMineL.Item.Position.Y}/{(int) Around.NearestMineL.Distance}" : "-")} | " +
-                                          // $"ENEMY {(Around.NearestEnemy != null ? $"{(int) Around.NearestEnemy.Unit.Position.X}/{(int) Around.NearestEnemy.Unit.Position.Y}/{(int) Around.NearestEnemy.Distance}" : "-")} | " +
-                                          // $"E-MINE {(Around.NearestMine != null ? $"{(int) Around.NearestMine.Mine.Position.X}/{(int) Around.NearestMine.Mine.Position.Y}/{(int) Around.NearestMine.Distance}" : "-")} | " +
-                                          // $"ME HAS WEAPON: {Me.HasWeapon} | " +
-                                          // $"MY WEAPON TYPE: {(Me.HasWeapon ? $"{Me.Weapon.Value.Typ}" : "-")} | " +
-                                          //$"MY HEALTH: {Me.Health} | " +
-                                          //$"NENEMY HEALTH: {Around.NearestEnemy.Health} | " +
-                                          //$"NENEMY HAS WEAPON: {Around.NearestEnemy.HasWeapon} | " +
-                                          //$"NENEMY WEAPON TYPE: {(Around.NearestEnemy.HasWeapon ? $"{Around.NearestEnemy.Weapon.Value.Typ}" : "-")} | " +
-                                          // $"AMMO: {(Me.HasWeapon ? $"{Me.Weapon.Value.Magazine}" : "-")} | " +
-                                          // $"TILET: {Around.NextTileT} | " +
-                                          // $"TILEB: {Around.NextTileB} | " +
-                                          // $"TILEL: {Around.NextTileL} | " +
-                                          // $"TILER: {Around.NextTileR} | " +
+                                          //$"Bullets count: {Around.Bullets.Count} | " +
+                                          //$"Nearest bullet: {(Around.NearestBullet != null ? $"{(int) Around.NearestBullet.Bullet.Position.X}/{(int) Around.NearestBullet.Bullet.Position.Y}/{(int) Around.NearestBullet.Distance}" : "-")} | " +
+                                          // $"Nearest bullet type: {(Around.NearestBullet != null ? $"{Around.NearestBullet.WeaponType}" : "-")} | " +
+                                          // $"Nearest bullet damage: {(Around.NearestBullet != null ? $"{Around.NearestBullet.Damage}" : "-")} | " +
+                                          // $"Nearest enemy {(Around.NearestEnemy != null ? $"{(int) Around.NearestEnemy.Unit.Position.X}/{(int) Around.NearestEnemy.Unit.Position.Y}/{(int) Around.NearestEnemy.Distance}" : "-")} | " +
+                                          // $"Nearest enemy mine {(Around.NearestMine != null ? $"{(int) Around.NearestMine.Mine.Position.X}/{(int) Around.NearestMine.Mine.Position.Y}/{(int) Around.NearestMine.Distance}" : "-")} | " +
+                                          // $"Nearest weapon {(Around.NearestWeapon != null ? Around.NearestWeapon.WeaponType.ToString() : "-")} | " +
+                                          // $"Nearest weapon position {(Around.NearestWeapon != null ? $"{(int) Around.NearestWeapon.Item.Position.X}/{(int) Around.NearestWeapon.Item.Position.Y}/{(int) Around.NearestWeapon.Distance}" : "-")} | " +
+                                          // $"Nearest pistol {(Around.NearestPistol != null ? $"{(int) Around.NearestPistol.Item.Position.X}/{(int) Around.NearestPistol.Item.Position.Y}/{(int) Around.NearestPistol.Distance}" : "-")} | " +
+                                          // $"Nearest rifle {(Around.NearestRifle != null ? $"{(int) Around.NearestRifle.Item.Position.X}/{(int) Around.NearestRifle.Item.Position.Y}/{(int) Around.NearestRifle.Distance}" : "-")} | " +
+                                          // $"Nearest RL {(Around.NearestRLauncher != null ? $"{(int) Around.NearestRLauncher.Item.Position.X}/{(int) Around.NearestRLauncher.Item.Position.Y}/{(int) Around.NearestRLauncher.Distance}" : "-")} | " +
+                                          // $"Nearest health {(Around.NearestHealth != null ? $"{(int) Around.NearestHealth.Item.Position.X}/{(int) Around.NearestHealth.Item.Position.Y}/{(int) Around.NearestHealth.Distance}" : "-")} | " +
+                                          // $"Nearest mine loot {(Around.NearestMineL != null ? $"{(int) Around.NearestMineL.Item.Position.X}/{(int) Around.NearestMineL.Item.Position.Y}/{(int) Around.NearestMineL.Distance}" : "-")} | " +
+                                          // $"Me has weapon: {Me.HasWeapon} | " +
+                                          // $"My weapon type: {(Me.HasWeapon ? $"{Me.Weapon.Value.Typ}" : "-")} | " +
+                                          // $"My health: {Me.Health} | " +
+                                          //$"Nearest enemy health: {Around.NearestEnemy.Health} | " +
+                                          //$"Nearest enemy has weapon: {Around.NearestEnemy.HasWeapon} | " +
+                                          //$"Nearest enemy weapon type: {(Around.NearestEnemy.HasWeapon ? $"{Around.NearestEnemy.Weapon.Value.Typ}" : "-")} | " +
+                                          $"My magazine ammo: {(Me.HasWeapon ? $"{Me.Weapon.Value.Magazine}" : "-")} | " +
+                                          // $"My tile Top: {Around.NextTileT} | " +
+                                          // $"My tile Bottom: {Around.NextTileB} | " +
+                                          // $"My tile Left: {Around.NextTileL} | " +
+                                          // $"My tile Right: {Around.NextTileR} | " +
+                                          //$"Nearest enemy tile Top: {Around.NearestEnemy.NextTileT} | " +
+                                          //$"Nearest enemy tile Bottom: {Around.NearestEnemy.NextTileB} | " +
+                                          //$"Nearest enemy tile Left: {Around.NearestEnemy.NextTileL} | " +
+                                          //$"Nearest enemy tile Right: {Around.NearestEnemy.NextTileR} | " +
                                           // $"Me.OnGround: {Me.OnGround} | " +
                                           // $"Me.OnLadder: {Me.OnLadder} | " +
                                           // $"Me.Stand: {Me.Stand} | " +
                                           // $"Me.SeeRight: {Me.SeeRight} | " +
                                           // $"Me.SeeLeft: {Me.SeeLeft} | " +
-                                          $"Me.Mines: {Me.Mines} | " +
-                                          $"Me.CanPlantMine: {Me.CanPlantMine} | " +
+                                          //$"Me.Mines: {Me.Mines} | " +
+                                          //$"Me.CanPlantMine: {Me.CanPlantMine} | " +
                                           ""));
         }
 
