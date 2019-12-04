@@ -14,12 +14,30 @@ namespace AiCup2019
     {
         #region Classes
 
+        public class Constants
+        {
+            public int MaxHealth { get; } = 100;
+            public int MaxVelocityR { get; } = 10;
+            public int MaxVelocityL { get; } = -10;
+            public int FullPistolAmmo { get; } = 8;
+            public int FullRifleAmmo { get; } = 20;
+            public int FullRLAmmo { get; } = 1;
+        }
+
         public class MyUnit
         {
             public Unit Unit { get; set; }
             public int Health => Unit.Health;
+            public int Mines => Unit.Mines;
+            public bool CanPlantMine => Unit.Mines > 0;
             public bool HasWeapon => Weapon != null;
             public Weapon? Weapon => Unit.Weapon;
+            public bool SeeRight => Unit.WalkedRight;
+            public bool SeeLeft => !Unit.WalkedRight;
+            public bool Stand => Unit.Stand;
+            public bool OnGround => Unit.OnGround;
+            public bool OnLadder => Unit.OnLadder;
+            public JumpState JumpState => Unit.JumpState;
             public Vec2Double Target { get; set; }
             public Vec2Double Aim { get; set; }
             public bool Jump { get; set; }
@@ -103,6 +121,11 @@ namespace AiCup2019
             public LootItem NearestMineL { get; set; } = new LootItem(new LootBox());
 
             #endregion
+
+            public Tile NextTileT { get; set; }
+            public Tile NextTileB { get; set; }
+            public Tile NextTileR { get; set; }
+            public Tile NextTileL { get; set; }
         }
 
         #endregion
@@ -111,10 +134,12 @@ namespace AiCup2019
         {
             Me = new MyUnit();
             Around = new World();
+            Const = new Constants();
         }
 
         private static Game Game { get; set; }
         private static Debug Debug { get; set; }
+        private static Constants Const { get; set; }
         private static MyUnit Me { get; set; }
         private World Around { get; }
 
@@ -142,6 +167,15 @@ namespace AiCup2019
             ScanNearestEnemy();
             ScanNearestMine();
             ScanBullets();
+            ScanTiles();
+        }
+
+        private void ScanTiles()
+        {
+            Around.NextTileR = Game.Level.Tiles[(int) (Me.Unit.Position.X - 1)][(int) Me.Unit.Position.Y];
+            Around.NextTileL = Game.Level.Tiles[(int) (Me.Unit.Position.X + 1)][(int) Me.Unit.Position.Y];
+            Around.NextTileT = Game.Level.Tiles[(int) Me.Unit.Position.X][(int) Me.Unit.Position.Y + 1];
+            Around.NextTileB = Game.Level.Tiles[(int) Me.Unit.Position.X][(int) Me.Unit.Position.Y - 1];
         }
 
         private void ScanLoot()
@@ -225,15 +259,7 @@ namespace AiCup2019
 
         private void ChooseBehavior()
         {
-            if (!Me.HasWeapon)
-            {
-                SetTarget(Around.NearestEnemy.Unit.Position);
-            }
-            else
-            {
-                SetTarget(Around.NearestEnemy.Unit.Position);
-            }
-
+            SetTarget(Around.NearestEnemy.Unit.Position);
             SetAim(Around.NearestEnemy.Unit.Position);
             SetJump();
         }
@@ -268,7 +294,7 @@ namespace AiCup2019
         {
             var action = new UnitAction
                          {
-                             Velocity = 99,
+                             Velocity = Const.MaxVelocityR,
                              Jump = Me.Jump,
                              JumpDown = !Me.Jump,
                              Aim = Me.Aim,
@@ -283,8 +309,8 @@ namespace AiCup2019
         private void DebugWrite()
         {
             Debug.Draw(new CustomData.Log($"" +
-                                          $"BULLETS: {Around.Bullets.Count} | " +
-                                          $"NEAREST BULLET: {(Around.NearestBullet != null ? $"{(int) Around.NearestBullet.Bullet.Position.X}/{(int) Around.NearestBullet.Bullet.Position.Y}/{(int) Around.NearestBullet.Distance}" : "-")} | " +
+                                          //$"BULLETS: {Around.Bullets.Count} | " +
+                                          //$"NEAREST BULLET: {(Around.NearestBullet != null ? $"{(int) Around.NearestBullet.Bullet.Position.X}/{(int) Around.NearestBullet.Bullet.Position.Y}/{(int) Around.NearestBullet.Distance}" : "-")} | " +
                                           // $"ENEMY {(Around.NearestEnemy != null ? $"{(int) Around.NearestEnemy.Unit.Position.X}/{(int) Around.NearestEnemy.Unit.Position.Y}/{(int) Around.NearestEnemy.Distance}" : "-")} | " +
                                           // $"E-MINE {(Around.NearestMine != null ? $"{(int) Around.NearestMine.Mine.Position.X}/{(int) Around.NearestMine.Mine.Position.Y}/{(int) Around.NearestMine.Distance}" : "-")} | " +
                                           // $"NEAR WEAPON {(Around.NearestWeapon != null ? Around.NearestWeapon.WeaponType.ToString() : "-")} | " +
@@ -298,10 +324,22 @@ namespace AiCup2019
                                           // $"E-MINE {(Around.NearestMine != null ? $"{(int) Around.NearestMine.Mine.Position.X}/{(int) Around.NearestMine.Mine.Position.Y}/{(int) Around.NearestMine.Distance}" : "-")} | " +
                                           // $"ME HAS WEAPON: {Me.HasWeapon} | " +
                                           // $"MY WEAPON TYPE: {(Me.HasWeapon ? $"{Me.Weapon.Value.Typ}" : "-")} | " +
-                                          $"MY HEALTH: {Me.Health} | " +
-                                          $"NENEMY HEALTH: {Around.NearestEnemy.Health} | " +
-                                          $"NENEMY HAS WEAPON: {Around.NearestEnemy.HasWeapon} | " +
-                                          $"NENEMY WEAPON TYPE: {(Around.NearestEnemy.HasWeapon ? $"{Around.NearestEnemy.Weapon.Value.Typ}" : "-")} | " +
+                                          //$"MY HEALTH: {Me.Health} | " +
+                                          //$"NENEMY HEALTH: {Around.NearestEnemy.Health} | " +
+                                          //$"NENEMY HAS WEAPON: {Around.NearestEnemy.HasWeapon} | " +
+                                          //$"NENEMY WEAPON TYPE: {(Around.NearestEnemy.HasWeapon ? $"{Around.NearestEnemy.Weapon.Value.Typ}" : "-")} | " +
+                                          // $"AMMO: {(Me.HasWeapon ? $"{Me.Weapon.Value.Magazine}" : "-")} | " +
+                                          // $"TILET: {Around.NextTileT} | " +
+                                          // $"TILEB: {Around.NextTileB} | " +
+                                          // $"TILEL: {Around.NextTileL} | " +
+                                          // $"TILER: {Around.NextTileR} | " +
+                                          // $"Me.OnGround: {Me.OnGround} | " +
+                                          // $"Me.OnLadder: {Me.OnLadder} | " +
+                                          // $"Me.Stand: {Me.Stand} | " +
+                                          // $"Me.SeeRight: {Me.SeeRight} | " +
+                                          // $"Me.SeeLeft: {Me.SeeLeft} | " +
+                                          $"Me.Mines: {Me.Mines} | " +
+                                          $"Me.CanPlantMine: {Me.CanPlantMine} | " +
                                           ""));
         }
 
