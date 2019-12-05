@@ -25,6 +25,9 @@ namespace AiCup2019
             public int RifleDamage { get; } = 5;
             public int RLDamage { get; } = 30;
             public int HealthAid { get; } = 50;
+            public ColorFloat RedColor { get; } = new ColorFloat(255, 0, 0, 255);
+            public ColorFloat GreenColor { get; } = new ColorFloat(0, 255, 0, 255);
+            public ColorFloat BlueColor { get; } = new ColorFloat(0, 0, 255, 255);
         }
 
         public class MyUnit
@@ -330,6 +333,7 @@ namespace AiCup2019
 
             return false;
         }
+
         private UnitAction DoAction()
         {
             var action = new UnitAction
@@ -367,8 +371,8 @@ namespace AiCup2019
                                           // $"My weapon type: {(Me.HasWeapon ? $"{Me.Weapon.Value.Typ}" : "-")} | " +
                                           // $"My health: {Me.Health} | " +
                                           // $"Nearest enemy health: {Around.NearestEnemy.Health} | " +
-                                          //$"Nearest enemy has weapon: {Around.NearestEnemy.HasWeapon} | " +
-                                          //$"Nearest enemy weapon type: {(Around.NearestEnemy.HasWeapon ? $"{Around.NearestEnemy.Weapon.Value.Typ}" : "-")} | " +
+                                          // $"Nearest enemy has weapon: {Around.NearestEnemy.HasWeapon} | " +
+                                          // $"Nearest enemy weapon type: {(Around.NearestEnemy.HasWeapon ? $"{Around.NearestEnemy.Weapon.Value.Typ}" : "-")} | " +
                                           // $"My magazine ammo: {(Me.HasWeapon ? $"{Me.Weapon.Value.Magazine}" : "-")} | " +
                                           // $"My tile Top: {Around.NextTileT} | " +
                                           // $"My tile Bottom: {Around.NextTileB} | " +
@@ -376,9 +380,6 @@ namespace AiCup2019
                                           // $"My tile Right: {Around.NextTileR} | " +
                                           // $"Nearest enemy tile Top: {Around.NearestEnemy.NextTileT} | " +
                                           // $"Nearest enemy tile Bottom: {Around.NearestEnemy.NextTileB} | " +
-                                          // $"Nearest enemy X: {Around.NearestEnemy.Unit.Position.X} | " +
-                                          // $"Nearest enemy Y: {Around.NearestEnemy.Unit.Position.Y} | " +
-                                          // $"Nearest enemy distance: {Around.NearestEnemy.Distance} | " +
                                           // $"Nearest enemy tile Left: {Around.NearestEnemy.NextTileL} | " +
                                           // $"Nearest enemy tile Right: {Around.NearestEnemy.NextTileR} | " +
                                           // $"Me.OnGround: {Me.OnGround} | " +
@@ -386,10 +387,17 @@ namespace AiCup2019
                                           // $"Me.Stand: {Me.Stand} | " +
                                           // $"Me.SeeRight: {Me.SeeRight} | " +
                                           // $"Me.SeeLeft: {Me.SeeLeft} | " +
-                                          //$"Me.Mines: {Me.Mines} | " +
-                                          //$"Me.CanPlantMine: {Me.CanPlantMine} | " +
+                                          // $"Me.Mines: {Me.Mines} | " +
+                                          // $"Me.CanPlantMine: {Me.CanPlantMine} | " +
                                           // $"{Game.Level.Tiles[39][29]}" +
                                           ""));
+
+            Debug.Draw(new CustomData.Line(new Vec2Float((float) Me.Unit.Position.X,
+                                                         (float) Me.Unit.Position.Y),
+                                           new Vec2Float((float) Around.NearestEnemy.Unit.Position.X,
+                                                         (float) Around.NearestEnemy.Unit.Position.Y),
+                                           0.1f,
+                                           Const.GreenColor));
         }
 
         private static double GetDistance(Vec2Double a, Vec2Double b)
