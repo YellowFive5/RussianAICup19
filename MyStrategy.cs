@@ -17,14 +17,14 @@ namespace AiCup2019
         public class Constants
         {
             public int MaxHealth { get; } = 100;
-            public int MaxVelocityR { get; } = 10;
-            public int MaxVelocityL { get; } = -10;
+            public int MaxVelocity { get; } = 10;
             public int FullPistolAmmo { get; } = 8;
             public int FullRifleAmmo { get; } = 20;
             public int FullRLAmmo { get; } = 1;
             public int PistolDamage { get; } = 20;
             public int RifleDamage { get; } = 5;
             public int RLDamage { get; } = 30;
+            public int HealthAid { get; } = 50;
         }
 
         public class MyUnit
@@ -314,18 +314,28 @@ namespace AiCup2019
             }
         }
 
+        private double VelocityLR(double velocity)
+        {
+            if (Me.Unit.Position.X < Me.Target.X)
+            {
+                return velocity;
+            }
+
+            return velocity * -1;
+        }
+
         private UnitAction DoAction()
         {
             var action = new UnitAction
                          {
-                             Velocity = Const.MaxVelocityR,
+                             Velocity = VelocityLR(Const.MaxVelocity),
                              Jump = Me.Jump,
                              JumpDown = false,
                              Aim = Me.Aim,
                              Shoot = false,
                              SwapWeapon = true,
                              PlantMine = false,
-                             Reload = false
+                             Reload = true
                          };
             return action;
         }
@@ -349,14 +359,14 @@ namespace AiCup2019
                                           // $"Me has weapon: {Me.HasWeapon} | " +
                                           // $"My weapon type: {(Me.HasWeapon ? $"{Me.Weapon.Value.Typ}" : "-")} | " +
                                           // $"My health: {Me.Health} | " +
-                                          //$"Nearest enemy health: {Around.NearestEnemy.Health} | " +
+                                          $"Nearest enemy health: {Around.NearestEnemy.Health} | " +
                                           //$"Nearest enemy has weapon: {Around.NearestEnemy.HasWeapon} | " +
                                           //$"Nearest enemy weapon type: {(Around.NearestEnemy.HasWeapon ? $"{Around.NearestEnemy.Weapon.Value.Typ}" : "-")} | " +
                                           // $"My magazine ammo: {(Me.HasWeapon ? $"{Me.Weapon.Value.Magazine}" : "-")} | " +
-                                          $"My tile Top: {Around.NextTileT} | " +
-                                          $"My tile Bottom: {Around.NextTileB} | " +
-                                          $"My tile Left: {Around.NextTileL} | " +
-                                          $"My tile Right: {Around.NextTileR} | " +
+                                          // $"My tile Top: {Around.NextTileT} | " +
+                                          // $"My tile Bottom: {Around.NextTileB} | " +
+                                          // $"My tile Left: {Around.NextTileL} | " +
+                                          // $"My tile Right: {Around.NextTileR} | " +
                                           //$"Nearest enemy tile Top: {Around.NearestEnemy.NextTileT} | " +
                                           //$"Nearest enemy tile Bottom: {Around.NearestEnemy.NextTileB} | " +
                                           //$"Nearest enemy tile Left: {Around.NearestEnemy.NextTileL} | " +
@@ -364,8 +374,8 @@ namespace AiCup2019
                                           // $"Me.OnGround: {Me.OnGround} | " +
                                           // $"Me.OnLadder: {Me.OnLadder} | " +
                                           // $"Me.Stand: {Me.Stand} | " +
-                                          $"Me.SeeRight: {Me.SeeRight} | " +
-                                          $"Me.SeeLeft: {Me.SeeLeft} | " +
+                                          // $"Me.SeeRight: {Me.SeeRight} | " +
+                                          // $"Me.SeeLeft: {Me.SeeLeft} | " +
                                           //$"Me.Mines: {Me.Mines} | " +
                                           //$"Me.CanPlantMine: {Me.CanPlantMine} | " +
                                           ""));
