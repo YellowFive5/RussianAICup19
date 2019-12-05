@@ -393,9 +393,9 @@ namespace AiCup2019
                                           ""));
 
             Debug.Draw(new CustomData.Line(new Vec2Float((float) Me.Unit.Position.X,
-                                                         (float) Me.Unit.Position.Y),
+                                                         (float) Me.Unit.Position.Y + (float) Me.Unit.Size.Y / 2),
                                            new Vec2Float((float) Around.NearestEnemy.Unit.Position.X,
-                                                         (float) Around.NearestEnemy.Unit.Position.Y),
+                                                         (float) Around.NearestEnemy.Unit.Position.Y + (float) Around.NearestEnemy.Unit.Size.Y / 2),
                                            0.1f,
                                            Const.GreenColor));
         }
