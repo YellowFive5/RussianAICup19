@@ -324,11 +324,18 @@ namespace AiCup2019
             return velocity * -1;
         }
 
+        private bool IsStraightVisible(Vec2Double obj1, Vec2Double obj2)
+        {
+            var obj1HigherThanObj2 = obj1.Y > obj2.Y;
+
+            return false;
+        }
         private UnitAction DoAction()
         {
             var action = new UnitAction
                          {
-                             Velocity = VelocityLR(Const.MaxVelocity),
+                             // Velocity = VelocityLR(Const.MaxVelocity),
+                             Velocity = 0,
                              Jump = Me.Jump,
                              JumpDown = false,
                              Aim = Me.Aim,
@@ -344,7 +351,7 @@ namespace AiCup2019
         {
             Debug.Draw(new CustomData.Log($"" +
                                           //$"Bullets count: {Around.Bullets.Count} | " +
-                                          //$"Nearest bullet: {(Around.NearestBullet != null ? $"{(int) Around.NearestBullet.Bullet.Position.X}/{(int) Around.NearestBullet.Bullet.Position.Y}/{(int) Around.NearestBullet.Distance}" : "-")} | " +
+                                          // $"Nearest bullet: {(Around.NearestBullet != null ? $"{(int) Around.NearestBullet.Bullet.Position.X}/{(int) Around.NearestBullet.Bullet.Position.Y}/{(int) Around.NearestBullet.Distance}" : "-")} | " +
                                           // $"Nearest bullet type: {(Around.NearestBullet != null ? $"{Around.NearestBullet.WeaponType}" : "-")} | " +
                                           // $"Nearest bullet damage: {(Around.NearestBullet != null ? $"{Around.NearestBullet.Damage}" : "-")} | " +
                                           // $"Nearest enemy {(Around.NearestEnemy != null ? $"{(int) Around.NearestEnemy.Unit.Position.X}/{(int) Around.NearestEnemy.Unit.Position.Y}/{(int) Around.NearestEnemy.Distance}" : "-")} | " +
@@ -359,7 +366,7 @@ namespace AiCup2019
                                           // $"Me has weapon: {Me.HasWeapon} | " +
                                           // $"My weapon type: {(Me.HasWeapon ? $"{Me.Weapon.Value.Typ}" : "-")} | " +
                                           // $"My health: {Me.Health} | " +
-                                          $"Nearest enemy health: {Around.NearestEnemy.Health} | " +
+                                          // $"Nearest enemy health: {Around.NearestEnemy.Health} | " +
                                           //$"Nearest enemy has weapon: {Around.NearestEnemy.HasWeapon} | " +
                                           //$"Nearest enemy weapon type: {(Around.NearestEnemy.HasWeapon ? $"{Around.NearestEnemy.Weapon.Value.Typ}" : "-")} | " +
                                           // $"My magazine ammo: {(Me.HasWeapon ? $"{Me.Weapon.Value.Magazine}" : "-")} | " +
@@ -367,10 +374,13 @@ namespace AiCup2019
                                           // $"My tile Bottom: {Around.NextTileB} | " +
                                           // $"My tile Left: {Around.NextTileL} | " +
                                           // $"My tile Right: {Around.NextTileR} | " +
-                                          //$"Nearest enemy tile Top: {Around.NearestEnemy.NextTileT} | " +
-                                          //$"Nearest enemy tile Bottom: {Around.NearestEnemy.NextTileB} | " +
-                                          //$"Nearest enemy tile Left: {Around.NearestEnemy.NextTileL} | " +
-                                          //$"Nearest enemy tile Right: {Around.NearestEnemy.NextTileR} | " +
+                                          // $"Nearest enemy tile Top: {Around.NearestEnemy.NextTileT} | " +
+                                          // $"Nearest enemy tile Bottom: {Around.NearestEnemy.NextTileB} | " +
+                                          // $"Nearest enemy X: {Around.NearestEnemy.Unit.Position.X} | " +
+                                          // $"Nearest enemy Y: {Around.NearestEnemy.Unit.Position.Y} | " +
+                                          // $"Nearest enemy distance: {Around.NearestEnemy.Distance} | " +
+                                          // $"Nearest enemy tile Left: {Around.NearestEnemy.NextTileL} | " +
+                                          // $"Nearest enemy tile Right: {Around.NearestEnemy.NextTileR} | " +
                                           // $"Me.OnGround: {Me.OnGround} | " +
                                           // $"Me.OnLadder: {Me.OnLadder} | " +
                                           // $"Me.Stand: {Me.Stand} | " +
@@ -378,12 +388,13 @@ namespace AiCup2019
                                           // $"Me.SeeLeft: {Me.SeeLeft} | " +
                                           //$"Me.Mines: {Me.Mines} | " +
                                           //$"Me.CanPlantMine: {Me.CanPlantMine} | " +
+                                          // $"{Game.Level.Tiles[39][29]}" +
                                           ""));
         }
 
         private static double GetDistance(Vec2Double a, Vec2Double b)
         {
-            return (a.X - b.X) * (a.X - b.X) + (a.Y - b.Y) * (a.Y - b.Y);
+            return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
         }
     }
 }
