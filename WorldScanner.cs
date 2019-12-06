@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using AiCup2019.Model;
 
 #endregion
@@ -45,35 +44,34 @@ namespace AiCup2019
         private static void ScanLoot()
         {
             Around.AllLoot = new List<LootItem>();
-            Parallel.ForEach(Game.LootBoxes,
-                             (lootBox) =>
-                             {
-                                 if (lootBox.Item is Item.Weapon weapon)
-                                 {
-                                     switch (weapon.WeaponType)
-                                     {
-                                         case WeaponType.Pistol:
-                                             Around.AllLoot.Add(new LootItem(lootBox, Me, WeaponType.Pistol));
-                                             break;
-                                         case WeaponType.AssaultRifle:
-                                             Around.AllLoot.Add(new LootItem(lootBox, Me, WeaponType.AssaultRifle));
-                                             break;
-                                         case WeaponType.RocketLauncher:
-                                             Around.AllLoot.Add(new LootItem(lootBox, Me, WeaponType.RocketLauncher));
-                                             break;
-                                         default:
-                                             throw new ArgumentOutOfRangeException();
-                                     }
-                                 }
-                                 else if (lootBox.Item is Item.HealthPack)
-                                 {
-                                     Around.AllLoot.Add(new LootItem(lootBox, Me));
-                                 }
-                                 else if (lootBox.Item is Item.Mine)
-                                 {
-                                     Around.AllLoot.Add(new LootItem(lootBox, Me));
-                                 }
-                             });
+            foreach (var lootBox in Game.LootBoxes)
+            {
+                if (lootBox.Item is Item.Weapon weapon)
+                {
+                    switch (weapon.WeaponType)
+                    {
+                        case WeaponType.Pistol:
+                            Around.AllLoot.Add(new LootItem(lootBox, Me, WeaponType.Pistol));
+                            break;
+                        case WeaponType.AssaultRifle:
+                            Around.AllLoot.Add(new LootItem(lootBox, Me, WeaponType.AssaultRifle));
+                            break;
+                        case WeaponType.RocketLauncher:
+                            Around.AllLoot.Add(new LootItem(lootBox, Me, WeaponType.RocketLauncher));
+                            break;
+                        default:
+                            throw new ArgumentOutOfRangeException();
+                    }
+                }
+                else if (lootBox.Item is Item.HealthPack)
+                {
+                    Around.AllLoot.Add(new LootItem(lootBox, Me));
+                }
+                else if (lootBox.Item is Item.Mine)
+                {
+                    Around.AllLoot.Add(new LootItem(lootBox, Me));
+                }
+            }
 
             Around.LootItems = Game.LootBoxes.Length;
 
@@ -88,36 +86,39 @@ namespace AiCup2019
         private static void ScanNearestEnemy()
         {
             Around.Enemies = new List<EnemyUnit>();
-            Parallel.ForEach(Game.Units,
-                             (unit) =>
-                             {
-                                 if (unit.PlayerId != Me.Man.PlayerId)
-                                 {
-                                     Around.Enemies.Add(new EnemyUnit(unit, Me));
-                                 }
-                             });
+            foreach (var unit in Game.Units)
+            {
+                if (unit.PlayerId != Me.Man.PlayerId)
+                {
+                    Around.Enemies.Add(new EnemyUnit(unit, Me));
+                }
+            }
+
             Around.NearestEnemy = Around.Enemies.OrderByDescending(u => u.Distance).LastOrDefault();
         }
 
         private static void ScanNearestMine()
         {
             Around.PlantedMines = new List<EnemyMine>();
-            Parallel.ForEach(Game.Mines,
-                             (mine) => { Around.PlantedMines.Add(new EnemyMine(mine, Me)); });
+            foreach (var mine in Game.Mines)
+            {
+                Around.PlantedMines.Add(new EnemyMine(mine, Me));
+            }
+
             Around.NearestMine = Around.PlantedMines.OrderByDescending(m => m.Distance).LastOrDefault();
         }
 
         private static void ScanBullets()
         {
             Around.Bullets = new List<EnemyBullet>();
-            Parallel.ForEach(Game.Bullets,
-                             (bullet) =>
-                             {
-                                 if (bullet.PlayerId != Me.Man.PlayerId)
-                                 {
-                                     Around.Bullets.Add(new EnemyBullet(bullet, Me));
-                                 }
-                             });
+            foreach (var bullet in Game.Bullets)
+            {
+                if (bullet.PlayerId != Me.Man.PlayerId)
+                {
+                    Around.Bullets.Add(new EnemyBullet(bullet, Me));
+                }
+            }
+
             Around.NearestBullet = Around.Bullets.OrderByDescending(b => b.Distance).LastOrDefault();
         }
     }
