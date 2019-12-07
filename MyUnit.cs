@@ -9,6 +9,8 @@ namespace AiCup2019
     public class MyUnit : CustomUnit
     {
         public Vec2Double Target { get; set; }
+        public bool NeedHeel => Health < 50;
+        public bool BestWeaponTaken { get; set; }
         public Vec2Double Aim { get; set; }
         public bool Jump { get; set; }
         public bool JumpDown { get; set; }

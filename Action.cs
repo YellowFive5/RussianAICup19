@@ -1,5 +1,9 @@
-﻿using System.Dynamic;
+﻿#region Usings
+
+using System;
 using AiCup2019.Model;
+
+#endregion
 
 namespace AiCup2019
 {
@@ -16,9 +20,24 @@ namespace AiCup2019
             Around = around;
         }
 
-        public static void TakeNearestWeapon(Game game, MyUnit me, World around)
+        public static void TakeBestWeapon(Game game, MyUnit me, World around)
         {
             Set(game, me, around);
+
+            switch (Around.BestWeapon)
+            {
+                case WeaponType.Pistol:
+                    SetTarget(Around.NearestPistol.Position);
+                    break;
+                case WeaponType.AssaultRifle:
+                    SetTarget(Around.NearestRifle.Position);
+                    break;
+                case WeaponType.RocketLauncher:
+                    SetTarget(Around.NearestRLauncher.Position);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
             var action = new UnitAction
                          {
@@ -27,26 +46,47 @@ namespace AiCup2019
                              JumpDown = SetJumpDown(),
                              Aim = SetAim(Around.NearestEnemy.Position),
                              Shoot = SetShootMode(),
-                             SwapWeapon = SetSwapWeapon(),
-                             PlantMine = SetPlantMine(),
-                             Reload = SetReload()
+                             SwapWeapon = SetSwapWeapon(true),
+                             PlantMine = SetPlantMine(false),
+                             Reload = SetReload(true)
                          };
-
-            me.NextAction = new CustomAction(nameof(TakeNearestWeapon), action);
+            me.NextAction = new CustomAction(nameof(TakeBestWeapon), action);
         }
 
-        private static bool SetReload()
+        public static void GoHeel(Game game, MyUnit me, World around)
         {
+            Set(game, me, around);
+
+            SetTarget(Around.NearestHealth.Position);
+            var action = new UnitAction
+                         {
+                             Velocity = VelocityLR(Constants.MaxVelocity),
+                             Jump = SetJump(),
+                             JumpDown = SetJumpDown(),
+                             Aim = SetAim(Around.NearestEnemy.Position),
+                             Shoot = SetShootMode(),
+                             SwapWeapon = SetSwapWeapon(false),
+                             PlantMine = SetPlantMine(false),
+                             Reload = SetReload(true)
+                         };
+            me.NextAction = new CustomAction(nameof(GoHeel), action);
+        }
+
+        private static bool SetReload(bool reload)
+        {
+            Me.Reload = reload;
             return Me.Reload;
         }
 
-        private static bool SetPlantMine()
+        private static bool SetPlantMine(bool plant)
         {
+            Me.PlantMine = plant;
             return Me.PlantMine;
         }
 
-        private static bool SetSwapWeapon()
+        private static bool SetSwapWeapon(bool swap)
         {
+            Me.SwapWeapon = swap;
             return Me.SwapWeapon;
         }
 
@@ -79,7 +119,8 @@ namespace AiCup2019
 
         private static bool SetJump()
         {
-            if (Me.OnLadder
+            if (Me.Target.X >= Me.Position.X &&
+                Me.OnLadder
                 || Around.NextTileR == Tile.Wall
                 || Around.NextTileL == Tile.Wall)
             {
@@ -95,6 +136,7 @@ namespace AiCup2019
 
         private static bool SetJumpDown()
         {
+            Me.JumpDown = !Me.Jump;
             return Me.JumpDown;
         }
     }

@@ -38,9 +38,16 @@ namespace AiCup2019
         {
             Me.NextAction = new CustomAction();
 
-            if (Me.WithoutWeapon)
+            if (Me.NeedHeel && Around.NearestHealthExist)
             {
-                Action.TakeNearestWeapon(Game, Me, Around);
+                Action.GoHeel(Game, Me, Around);
+                return;
+            }
+            
+            if (!Me.BestWeaponTaken)
+            {
+                Action.TakeBestWeapon(Game, Me, Around);
+                return;
             }
         }
 
@@ -85,6 +92,8 @@ namespace AiCup2019
                                           //  $"Me.CanPlantMine: {Me.CanPlantMine} | " +
                                           //  $"{Game.Level.Tiles[39][29]}" +
                                           $"MyAction: {Me.NextAction.Name}" +
+                                          // $"BestWeapon: {Around.BestWeapon}" +
+                                          // $"BestWeapon taken: {Me.BestWeaponTaken}" +
                                           ""));
 
             var visible = Measure.IsStraightVisible(Me, Around.NearestEnemy, Game);
