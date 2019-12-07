@@ -16,6 +16,9 @@ namespace AiCup2019
         public Weapon? Weapon => Man.Weapon;
         public bool HasWeapon => Weapon != null;
         public bool WithoutWeapon => !HasWeapon;
+        public bool RLEquiped => HasWeapon && Weapon.Value.Typ == WeaponType.RocketLauncher;
+        public bool RifleEquiped => HasWeapon && Weapon.Value.Typ == WeaponType.AssaultRifle;
+        public bool PistolEquiped => HasWeapon && Weapon.Value.Typ == WeaponType.Pistol;
         public bool SeeRight => Man.WalkedRight;
         public bool SeeLeft => !Man.WalkedRight;
         public bool Stand => Man.Stand;

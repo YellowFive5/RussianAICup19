@@ -84,16 +84,16 @@ namespace AiCup2019
             Around.NearestRLauncher = Around.AllLoot.Where(l => l.WeaponType == WeaponType.RocketLauncher).OrderByDescending(x => x.Distance).LastOrDefault();
             Around.NearestHealth = Around.AllLoot.Where(l => l.Item.Item is Item.HealthPack).OrderByDescending(x => x.Distance).LastOrDefault();
             Around.NearestMineL = Around.AllLoot.Where(l => l.Item.Item is Item.Mine).OrderByDescending(x => x.Distance).LastOrDefault();
-            // No RL
-            // if (Me.HasWeapon &&
-            //     Me.Weapon.Value.Typ != WeaponType.RocketLauncher &&
-            //     Around.NearestRLauncherExist ||
-            //     !Me.HasWeapon &&
-            //     Around.NearestRLauncherExist)
-            // {
-            //     Around.BestWeapon = WeaponType.RocketLauncher;
-            // }
-            // else
+
+            if (Me.HasWeapon &&
+                Me.Weapon.Value.Typ != WeaponType.RocketLauncher &&
+                Around.NearestRLauncherExist ||
+                !Me.HasWeapon &&
+                Around.NearestRLauncherExist)
+            {
+                Around.BestWeapon = WeaponType.RocketLauncher;
+            }
+            else
             if (Me.HasWeapon &&
                      Me.Weapon.Value.Typ != WeaponType.RocketLauncher &&
                      Me.Weapon.Value.Typ != WeaponType.AssaultRifle &&

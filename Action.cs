@@ -77,6 +77,22 @@ namespace AiCup2019
             Set(game, me, around);
 
             SetTarget(Around.NearestEnemy.Position);
+
+            if (Me.RLEquiped)
+            {
+                Me.Target = Me.Position.X > Me.Target.X
+                                ? new Vec2Double(Me.Target.X + Constants.SafeArea > Constants.MaxXArrayTile
+                                                     ? Constants.MaxXArrayTile
+                                                     : Me.Target.X + Constants.SafeArea,
+                                                 Me.Target.Y)
+                                : new Vec2Double(Me.Target.X - Constants.SafeArea < 0
+                                                     ? 0
+                                                     : Me.Target.X - Constants.SafeArea,
+                                                 Me.Target.Y);
+                SetTarget(Me.Target);
+            }
+
+
             var action = new UnitAction
                          {
                              Velocity = VelocityLR(Constants.MaxVelocity),

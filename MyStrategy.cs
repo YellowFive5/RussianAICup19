@@ -43,13 +43,13 @@ namespace AiCup2019
                 Action.GoHeel(Game, Me, Around);
                 return;
             }
-            
+
             if (!Me.BestWeaponTaken)
             {
                 Action.TakeBestWeapon(Game, Me, Around);
                 return;
             }
-            
+
             Action.ShootEm(Game, Me, Around);
         }
 
@@ -101,6 +101,12 @@ namespace AiCup2019
                                           // $"BestWeapon: {Around.BestWeapon}" +
                                           // $"BestWeapon taken: {Me.BestWeaponTaken}" +
                                           ""));
+
+            Debug.Draw(new CustomData.PlacedText("+",
+                                                 new Vec2Float((float) Me.Target.X, (float) Me.Target.Y),
+                                                 TextAlignment.Center,
+                                                 20,
+                                                 Constants.RedColor));
 
             var visible = Measure.IsStraightVisible(Me, Around.NearestEnemy, Game);
 
