@@ -21,80 +21,29 @@ namespace AiCup2019
 
         public UnitAction GetAction(Unit unit, Game game, Debug debug)
         {
-            NextTick(unit, game, debug);
-            WorldScanner.Scan(Game, Me, Around);
-
-            ChooseBehavior();
-
-            DebugWrite();
-            return DoAction();
-        }
-
-        private void NextTick(Unit unit, Game game, Debug debug)
-        {
             Game = game;
             Debug = debug;
             Me.Man = unit;
+
+            WorldScanner.Scan(Game, Me, Around);
+
+            ChooseAction();
+
+            DebugWrite();
+
+            return Me.NextAction.Action;
         }
 
-        private void ChooseBehavior()
+        private void ChooseAction()
         {
-            SetTarget(Around.NearestEnemy.Position);
-            SetAim(Around.NearestEnemy.Position);
-            SetJump();
-        }
+            Me.NextAction = new CustomAction();
 
-        private void SetTarget(Vec2Double target)
-        {
-            Me.Target = target;
-        }
-
-        private void SetAim(Vec2Double target)
-        {
-            Me.Aim = new Vec2Double(Around.NearestEnemy.Position.X - Me.Position.X, Around.NearestEnemy.Position.Y - Me.Position.Y);
-            // Aim = target;
-        }
-
-        private void SetJump()
-        {
-            if (Me.OnLadder
-                || Around.NextTileR == Tile.Wall
-                || Around.NextTileL == Tile.Wall)
+            if (Me.WithoutWeapon)
             {
-                Me.Jump = true;
-            }
-            else
-            {
-                Me.Jump = false;
+                Action.TakeNearestWeapon(Game, Me, Around);
             }
         }
 
-        private double VelocityLR(double velocity)
-        {
-            if (Me.Position.X < Me.Target.X)
-            {
-                return velocity;
-            }
-
-            return velocity * -1;
-        }
-
-        private UnitAction DoAction()
-        {
-            var action = new UnitAction
-                         {
-                             // Velocity = VelocityLR(Const.MaxVelocity),
-                             Velocity = 0,
-                             Jump = Me.Jump,
-                             JumpDown = false,
-                             Aim = Me.Aim,
-                             Shoot = false,
-                             SwapWeapon = true,
-                             PlantMine = false,
-                             Reload = true
-                         };
-            return action;
-        }
 
         private void DebugWrite()
         {
@@ -135,6 +84,7 @@ namespace AiCup2019
                                           //  $"Me.Mines: {Me.Mines} | " +
                                           //  $"Me.CanPlantMine: {Me.CanPlantMine} | " +
                                           //  $"{Game.Level.Tiles[39][29]}" +
+                                          $"MyAction: {Me.NextAction.Name}" +
                                           ""));
 
             var visible = Measure.IsStraightVisible(Me, Around.NearestEnemy, Game);

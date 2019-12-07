@@ -15,6 +15,7 @@ namespace AiCup2019
         public int Health => Man.Health;
         public Weapon? Weapon => Man.Weapon;
         public bool HasWeapon => Weapon != null;
+        public bool WithoutWeapon => !HasWeapon;
         public bool SeeRight => Man.WalkedRight;
         public bool SeeLeft => !Man.WalkedRight;
         public bool Stand => Man.Stand;
