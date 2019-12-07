@@ -20,5 +20,7 @@ namespace AiCup2019
         public static ColorFloat RedColor { get; } = new ColorFloat(255, 0, 0, 255);
         public static ColorFloat GreenColor { get; } = new ColorFloat(0, 255, 0, 255);
         public static ColorFloat BlueColor { get; } = new ColorFloat(0, 0, 255, 255);
+        public static int MaxXArrayTile { get; set; } = 39;
+        public static int MaxYArrayTile { get; set; } = 29;
     }
 }
