@@ -49,8 +49,9 @@ namespace AiCup2019
                 Action.TakeBestWeapon(Game, Me, Around);
                 return;
             }
+            
+            Action.ShootEm(Game, Me, Around);
         }
-
 
         private void DebugWrite()
         {
@@ -75,14 +76,17 @@ namespace AiCup2019
                                           //  $"Nearest enemy has weapon: {Around.NearestEnemy.HasWeapon} | " +
                                           //  $"Nearest enemy weapon type: {(Around.NearestEnemy.HasWeapon ? $"{Around.NearestEnemy.Weapon.Value.Typ}" : "-")} | " +
                                           //  $"My magazine ammo: {(Me.HasWeapon ? $"{Me.Weapon.Value.Magazine}" : "-")} | " +
-                                          //  $"My tile Top: {Around.NextTileT} | " +
+                                          // $"My tile Top: {Around.NextTileT} | " +
                                           //  $"My tile Bottom: {Around.NextTileB} | " +
                                           //  $"My tile Left: {Around.NextTileL} | " +
                                           //  $"My tile Right: {Around.NextTileR} | " +
-                                          //  $"Nearest enemy tile Top: {Around.NearestEnemy.NextTileT} | " +
+                                          // $"My under platform: {Me.UnderPlatform} | " +
+                                          // $"Nearest enemy under platform: {Around.NearestEnemy.UnderPlatform} | " +
+                                          // $"Nearest enemy tile Top: {Around.NearestEnemy.NextTileT} | " +
                                           //  $"Nearest enemy tile Bottom: {Around.NearestEnemy.NextTileB} | " +
                                           //  $"Nearest enemy tile Left: {Around.NearestEnemy.NextTileL} | " +
                                           //  $"Nearest enemy tile Right: {Around.NearestEnemy.NextTileR} | " +
+                                          //  $"Me.OnGround: {Me.OnGround} | " +
                                           //  $"Me.OnGround: {Me.OnGround} | " +
                                           //  $"Me.OnLadder: {Me.OnLadder} | " +
                                           //  $"Me.Stand: {Me.Stand} | " +
@@ -91,7 +95,9 @@ namespace AiCup2019
                                           //  $"Me.Mines: {Me.Mines} | " +
                                           //  $"Me.CanPlantMine: {Me.CanPlantMine} | " +
                                           //  $"{Game.Level.Tiles[39][29]}" +
-                                          $"MyAction: {Me.NextAction.Name}" +
+                                          // $"MeOnGround: {Around.NearestEnemy.Man.OnGround}" +
+                                          // $"Jump: {Me.Jump}" +
+                                          // $"JumpDown: {Me.JumpDown}" +
                                           // $"BestWeapon: {Around.BestWeapon}" +
                                           // $"BestWeapon taken: {Me.BestWeaponTaken}" +
                                           ""));

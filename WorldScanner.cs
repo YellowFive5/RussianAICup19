@@ -39,6 +39,9 @@ namespace AiCup2019
             Around.NearestEnemy.NextTileL = Game.Level.Tiles[(int) (Around.NearestEnemy.Position.X - 1)][(int) Around.NearestEnemy.Position.Y];
             Around.NearestEnemy.NextTileT = Game.Level.Tiles[(int) Around.NearestEnemy.Position.X][(int) Around.NearestEnemy.Position.Y + 1];
             Around.NearestEnemy.NextTileB = Game.Level.Tiles[(int) Around.NearestEnemy.Position.X][(int) Around.NearestEnemy.Position.Y - 1];
+
+            Me.UnderPlatform = Game.Level.Tiles[(int) Me.Position.X][(int) Me.Position.Y + 2] == Tile.Platform;
+            Around.NearestEnemy.UnderPlatform = Game.Level.Tiles[(int) Around.NearestEnemy.Position.X][(int) Around.NearestEnemy.Position.Y + 2] == Tile.Platform;
         }
 
         private static void ScanLoot()
@@ -81,16 +84,17 @@ namespace AiCup2019
             Around.NearestRLauncher = Around.AllLoot.Where(l => l.WeaponType == WeaponType.RocketLauncher).OrderByDescending(x => x.Distance).LastOrDefault();
             Around.NearestHealth = Around.AllLoot.Where(l => l.Item.Item is Item.HealthPack).OrderByDescending(x => x.Distance).LastOrDefault();
             Around.NearestMineL = Around.AllLoot.Where(l => l.Item.Item is Item.Mine).OrderByDescending(x => x.Distance).LastOrDefault();
-
+            // No RL
+            // if (Me.HasWeapon &&
+            //     Me.Weapon.Value.Typ != WeaponType.RocketLauncher &&
+            //     Around.NearestRLauncherExist ||
+            //     !Me.HasWeapon &&
+            //     Around.NearestRLauncherExist)
+            // {
+            //     Around.BestWeapon = WeaponType.RocketLauncher;
+            // }
+            // else
             if (Me.HasWeapon &&
-                Me.Weapon.Value.Typ != WeaponType.RocketLauncher &&
-                Around.NearestRLauncherExist ||
-                !Me.HasWeapon &&
-                Around.NearestRLauncherExist)
-            {
-                Around.BestWeapon = WeaponType.RocketLauncher;
-            }
-            else if (Me.HasWeapon &&
                      Me.Weapon.Value.Typ != WeaponType.RocketLauncher &&
                      Me.Weapon.Value.Typ != WeaponType.AssaultRifle &&
                      Around.NearestRifleExist ||

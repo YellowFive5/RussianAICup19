@@ -48,7 +48,7 @@ namespace AiCup2019
                              Shoot = SetShootMode(),
                              SwapWeapon = SetSwapWeapon(true),
                              PlantMine = SetPlantMine(false),
-                             Reload = SetReload(true)
+                             Reload = SetReload()
                          };
             me.NextAction = new CustomAction(nameof(TakeBestWeapon), action);
         }
@@ -67,13 +67,33 @@ namespace AiCup2019
                              Shoot = SetShootMode(),
                              SwapWeapon = SetSwapWeapon(false),
                              PlantMine = SetPlantMine(false),
-                             Reload = SetReload(true)
+                             Reload = SetReload()
                          };
             me.NextAction = new CustomAction(nameof(GoHeel), action);
         }
 
-        private static bool SetReload(bool reload)
+        public static void ShootEm(Game game, MyUnit me, World around)
         {
+            Set(game, me, around);
+
+            SetTarget(Around.NearestEnemy.Position);
+            var action = new UnitAction
+                         {
+                             Velocity = VelocityLR(Constants.MaxVelocity),
+                             Jump = SetJump(),
+                             JumpDown = SetJumpDown(),
+                             Aim = SetAim(Around.NearestEnemy.Position),
+                             Shoot = SetShootMode(),
+                             SwapWeapon = SetSwapWeapon(false),
+                             PlantMine = SetPlantMine(false),
+                             Reload = SetReload()
+                         };
+            me.NextAction = new CustomAction(nameof(ShootEm), action);
+        }
+
+        private static bool SetReload()
+        {
+            var reload = Me.Weapon.HasValue && Me.Weapon.Value.Magazine == 0;
             Me.Reload = reload;
             return Me.Reload;
         }
@@ -90,8 +110,17 @@ namespace AiCup2019
             return Me.SwapWeapon;
         }
 
-        private static bool SetShootMode()
+        private static bool SetShootMode(bool? shoot = null)
         {
+            if (shoot != null)
+            {
+                Me.Shoot = shoot.Value;
+            }
+            else
+            {
+                return Measure.IsStraightVisible(Me, Around.NearestEnemy, Game);
+            }
+
             return Me.Shoot;
         }
 
@@ -113,16 +142,14 @@ namespace AiCup2019
         private static Vec2Double SetAim(Vec2Double target)
         {
             Me.Aim = new Vec2Double(Around.NearestEnemy.Position.X - Me.Position.X, Around.NearestEnemy.Position.Y - Me.Position.Y);
-            // Aim = target;
             return Me.Aim;
         }
 
         private static bool SetJump()
         {
-            if (Me.Target.X >= Me.Position.X &&
-                Me.OnLadder
-                || Around.NextTileR == Tile.Wall
-                || Around.NextTileL == Tile.Wall)
+            if ((int) Me.Target.Y >= (int) Me.Position.Y && Me.OnLadder ||
+                Around.NextTileR == Tile.Wall || Around.NextTileL == Tile.Wall ||
+                Me.UnderPlatform && Me.OnGround)
             {
                 Me.Jump = true;
             }
@@ -136,7 +163,15 @@ namespace AiCup2019
 
         private static bool SetJumpDown()
         {
-            Me.JumpDown = !Me.Jump;
+            if ((int) Me.Target.Y < (int) Me.Position.Y && !Me.Jump)
+            {
+                Me.JumpDown = true;
+            }
+            else
+            {
+                Me.JumpDown = false;
+            }
+
             return Me.JumpDown;
         }
     }
