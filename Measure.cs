@@ -15,7 +15,7 @@ namespace AiCup2019
             return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
         }
 
-        public static bool IsStraightVisible(CustomUnit unit1, CustomUnit unit2, Game game)
+        public static bool IsStraightVisible(CustomUnit unit1, CustomUnit unit2, Game game, Debug debug = null)
         {
             var visibleLine = new List<Tile>();
 
@@ -50,11 +50,11 @@ namespace AiCup2019
                     y = unit1.Position.Y - intervalY * i + 1;
                 }
 
-                // Debug.Draw(new CustomData.PlacedText("+",
-                //                                      new Vec2Float((float)x, (float)y),
-                //                                      TextAlignment.Center,
-                //                                      15,
-                //                                      Constants.BlueColor));
+                debug?.Draw(new CustomData.PlacedText("+",
+                                                     new Vec2Float((float)x, (float)y),
+                                                     TextAlignment.Center,
+                                                     15,
+                                                     Constants.BlueColor));
 
                 visibleLine.Add(game.Level.Tiles[(int) x][(int) y]);
             }

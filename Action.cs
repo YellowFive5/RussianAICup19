@@ -20,6 +20,8 @@ namespace AiCup2019
             Around = around;
         }
 
+        #region Actions
+
         public static void TakeBestWeapon(Game game, MyUnit me, World around)
         {
             Set(game, me, around);
@@ -78,21 +80,6 @@ namespace AiCup2019
 
             SetTarget(Around.NearestEnemy.Position);
 
-            if (Me.RLEquiped)
-            {
-                Me.Target = Me.Position.X > Me.Target.X
-                                ? new Vec2Double(Me.Target.X + Constants.SafeArea > Constants.MaxXArrayTile
-                                                     ? Constants.MaxXArrayTile
-                                                     : Me.Target.X + Constants.SafeArea,
-                                                 Me.Target.Y)
-                                : new Vec2Double(Me.Target.X - Constants.SafeArea < 0
-                                                     ? 0
-                                                     : Me.Target.X - Constants.SafeArea,
-                                                 Me.Target.Y);
-                SetTarget(Me.Target);
-            }
-
-
             var action = new UnitAction
                          {
                              Velocity = VelocityLR(Constants.MaxVelocity),
@@ -106,6 +93,41 @@ namespace AiCup2019
                          };
             me.NextAction = new CustomAction(nameof(ShootEm), action);
         }
+
+        public static void ShootEmWithRL(Game game, MyUnit me, World around)
+        {
+            Set(game, me, around);
+
+            SetTarget(Around.NearestEnemy.Position);
+
+            Me.Target = Me.Position.X > Me.Target.X
+                            ? new Vec2Double(Me.Target.X + Constants.SafeArea > Constants.MaxXArrayTile
+                                                 ? Constants.MaxXArrayTile
+                                                 : Me.Target.X + Constants.SafeArea,
+                                             Me.Target.Y)
+                            : new Vec2Double(Me.Target.X - Constants.SafeArea < 0
+                                                 ? 0
+                                                 : Me.Target.X - Constants.SafeArea,
+                                             Me.Target.Y);
+            // SetTarget(Me.Target);
+
+            var action = new UnitAction
+                         {
+                             Velocity = VelocityLR(Constants.MaxVelocity),
+                             Jump = SetJump(),
+                             JumpDown = SetJumpDown(),
+                             Aim = SetAim(Around.NearestEnemy.Position),
+                             Shoot = SetShootMode(),
+                             SwapWeapon = SetSwapWeapon(false),
+                             PlantMine = SetPlantMine(false),
+                             Reload = SetReload()
+                         };
+            me.NextAction = new CustomAction(nameof(ShootEmWithRL), action);
+        }
+
+        #endregion
+
+        #region Setters
 
         private static bool SetReload()
         {
@@ -165,10 +187,9 @@ namespace AiCup2019
         {
             if ((int) Me.Target.Y >= (int) Me.Position.Y
                 || (int) Me.Target.X != (int) Me.Position.X
-                && Me.OnLadder
-                || Around.WallNear
-                || Me.UnderPlatform && Me.OnGround
-                || !Me.OnGround)
+                && (Me.OnLadder
+                    || Around.WallNear
+                    || !Me.OnGround))
             {
                 Me.Jump = true;
             }
@@ -182,7 +203,8 @@ namespace AiCup2019
 
         private static bool SetJumpDown()
         {
-            if ((int) Me.Target.Y < (int) Me.Position.Y)
+            if ((int) Me.Target.Y < (int) Me.Position.Y
+                && !Me.Jump)
             {
                 Me.JumpDown = true;
             }
@@ -193,5 +215,7 @@ namespace AiCup2019
 
             return Me.JumpDown;
         }
+
+        #endregion
     }
 }
