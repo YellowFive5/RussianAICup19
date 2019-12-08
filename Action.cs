@@ -163,9 +163,11 @@ namespace AiCup2019
 
         private static bool SetJump()
         {
-            if ((int) Me.Target.Y >= (int) Me.Position.Y && Me.OnLadder ||
+            if ((int) Me.Target.Y >= (int) Me.Position.Y && 
+                ((int)Me.Target.X != (int)Me.Position.X 
+                && Me.OnLadder ||
                 Around.NextTileR == Tile.Wall || Around.NextTileL == Tile.Wall ||
-                Me.UnderPlatform && Me.OnGround)
+                Me.UnderPlatform && Me.OnGround))
             {
                 Me.Jump = true;
             }
