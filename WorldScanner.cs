@@ -42,6 +42,10 @@ namespace AiCup2019
 
             Me.UnderPlatform = Game.Level.Tiles[(int) Me.Position.X][(int) Me.Position.Y + 2] == Tile.Platform;
             Around.NearestEnemy.UnderPlatform = Game.Level.Tiles[(int) Around.NearestEnemy.Position.X][(int) Around.NearestEnemy.Position.Y + 2] == Tile.Platform;
+            Around.WallNear = Game.Level.Tiles[(int) Me.Position.X][(int) Me.Position.Y + 1] == Tile.Wall
+                              || Game.Level.Tiles[(int) Me.Position.X][(int) Me.Position.Y + 2] == Tile.Wall
+                              || Game.Level.Tiles[(int) Me.Position.X][(int) Me.Position.Y - 1] == Tile.Wall
+                              || Game.Level.Tiles[(int) Me.Position.X][(int) Me.Position.Y - 2] == Tile.Wall;
         }
 
         private static void ScanLoot()

@@ -34,5 +34,6 @@ namespace AiCup2019
         public Tile NextTileB { get; set; }
         public Tile NextTileR { get; set; }
         public Tile NextTileL { get; set; }
+        public bool WallNear { get; set; }
     }
 }
