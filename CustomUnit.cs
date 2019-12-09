@@ -28,5 +28,6 @@ namespace AiCup2019
         public bool CanPlantMine => Man.Mines > 0;
         public JumpState JumpState => Man.JumpState;
         public bool UnderPlatform { get; set; }
+        public double WeaponSpread => Weapon?.Spread ?? 0;
     }
 }

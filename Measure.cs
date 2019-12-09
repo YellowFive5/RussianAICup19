@@ -31,30 +31,30 @@ namespace AiCup2019
                 double y = 0;
                 if (unit1.Position.Y < unit2.Position.Y && unit1.Position.X > unit2.Position.X)
                 {
-                    x = unit1.Position.X - intervalX * i + 1;
-                    y = unit1.Position.Y + intervalY * i + 1;
+                    x = unit1.Position.X - intervalX * i;
+                    y = unit1.Position.Y + intervalY * i;
                 }
                 else if (unit1.Position.Y > unit2.Position.Y && unit1.Position.X < unit2.Position.X)
                 {
-                    x = unit2.Position.X - intervalX * i + 1;
-                    y = unit2.Position.Y + intervalY * i + 1;
+                    x = unit2.Position.X - intervalX * i;
+                    y = unit2.Position.Y + intervalY * i;
                 }
                 else if (unit1.Position.Y < unit2.Position.Y && unit1.Position.X < unit2.Position.X)
                 {
-                    x = unit2.Position.X - intervalX * i + 1;
-                    y = unit2.Position.Y - intervalY * i + 1;
+                    x = unit2.Position.X - intervalX * i;
+                    y = unit2.Position.Y - intervalY * i;
                 }
                 else if (unit1.Position.Y > unit2.Position.Y && unit1.Position.X > unit2.Position.X)
                 {
-                    x = unit1.Position.X - intervalX * i + 1;
-                    y = unit1.Position.Y - intervalY * i + 1;
+                    x = unit1.Position.X - intervalX * i;
+                    y = unit1.Position.Y - intervalY * i;
                 }
 
                 debug?.Draw(new CustomData.PlacedText("+",
-                                                     new Vec2Float((float)x, (float)y),
-                                                     TextAlignment.Center,
-                                                     15,
-                                                     Constants.BlueColor));
+                                                      new Vec2Float((float) x, (float) (y + unit1.Size.Y / 2)),
+                                                      TextAlignment.Center,
+                                                      15,
+                                                      Constants.BlueColor));
 
                 visibleLine.Add(game.Level.Tiles[(int) x][(int) y]);
             }
@@ -62,6 +62,16 @@ namespace AiCup2019
             var visible = !visibleLine.Exists(x => x == Tile.Wall);
 
             return visible;
+        }
+
+        public static bool RLAimed(MyUnit me, EnemyUnit aroundNearestEnemy, Game game)
+        {
+            if (me.WeaponSpread > Constants.RLFireSpread)
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 }

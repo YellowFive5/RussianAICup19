@@ -107,6 +107,8 @@ namespace AiCup2019
                                           // $"JumpDown: {Me.JumpDown}" +
                                           // $"BestWeapon: {Around.BestWeapon}" +
                                           // $"BestWeapon taken: {Me.BestWeaponTaken}" +
+                                          $"MyWeaponSpread: {Me.WeaponSpread}" +
+                                          $"EnemyWeaponSpread: {Around.NearestEnemy.WeaponSpread}" +
                                           ""));
 
             Debug.Draw(new CustomData.PlacedText("+",
@@ -115,7 +117,7 @@ namespace AiCup2019
                                                  20,
                                                  Constants.RedColor));
 
-            var visible = Measure.IsStraightVisible(Me, Around.NearestEnemy, Game);
+            var visible = Measure.IsStraightVisible(Me, Around.NearestEnemy, Game, Debug);
 
             Debug.Draw(new CustomData.Line(new Vec2Float((float) Me.Position.X,
                                                          (float) Me.Position.Y + (float) Me.Size.Y / 2),

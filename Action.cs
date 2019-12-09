@@ -109,8 +109,6 @@ namespace AiCup2019
                                                  ? Me.Target.X + Constants.SafeArea
                                                  : Me.Target.X - Constants.SafeArea,
                                              Me.Target.Y);
-            // SetTarget(Me.Target);
-
             var action = new UnitAction
                          {
                              Velocity = VelocityLR(Constants.MaxVelocity),
@@ -156,6 +154,12 @@ namespace AiCup2019
             }
             else
             {
+                if (Me.RLEquiped)
+                {
+                    return Measure.IsStraightVisible(Me, Around.NearestEnemy, Game) &&
+                           Measure.RLAimed(Me, Around.NearestEnemy, Game);
+                }
+
                 return Measure.IsStraightVisible(Me, Around.NearestEnemy, Game);
             }
 
@@ -185,7 +189,7 @@ namespace AiCup2019
 
         private static bool SetJump()
         {
-            if ((int) Me.Target.Y >= (int) Me.Position.Y
+            if ((int) Me.Target.Y > (int) Me.Position.Y
                 || (int) Me.Target.X != (int) Me.Position.X
                 && (Me.OnLadder
                     || Around.WallNear
