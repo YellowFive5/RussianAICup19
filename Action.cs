@@ -102,11 +102,11 @@ namespace AiCup2019
 
             Me.Target = Me.Position.X > Me.Target.X
                             ? new Vec2Double(Me.Target.X + Constants.SafeArea > Constants.MaxXArrayTile
-                                                 ? Constants.MaxXArrayTile
+                                                 ? Me.Target.X - Constants.SafeArea
                                                  : Me.Target.X + Constants.SafeArea,
                                              Me.Target.Y)
                             : new Vec2Double(Me.Target.X - Constants.SafeArea < 0
-                                                 ? 0
+                                                 ? Me.Target.X + Constants.SafeArea
                                                  : Me.Target.X - Constants.SafeArea,
                                              Me.Target.Y);
             // SetTarget(Me.Target);
