@@ -107,8 +107,8 @@ namespace AiCup2019
                                           // $"JumpDown: {Me.JumpDown}" +
                                           // $"BestWeapon: {Around.BestWeapon}" +
                                           // $"BestWeapon taken: {Me.BestWeaponTaken}" +
-                                          $"MyWeaponSpread: {Me.WeaponSpread}" +
-                                          $"EnemyWeaponSpread: {Around.NearestEnemy.WeaponSpread}" +
+                                          // $"MyWeaponSpread: {Me.WeaponSpread}" +
+                                          // $"EnemyWeaponSpread: {Around.NearestEnemy.WeaponSpread}" +
                                           ""));
 
             Debug.Draw(new CustomData.PlacedText("+",

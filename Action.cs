@@ -100,15 +100,23 @@ namespace AiCup2019
 
             SetTarget(Around.NearestEnemy.Position);
 
-            Me.Target = Me.Position.X > Me.Target.X
-                            ? new Vec2Double(Me.Target.X + Constants.SafeArea > Constants.MaxXArrayTile
-                                                 ? Me.Target.X - Constants.SafeArea
-                                                 : Me.Target.X + Constants.SafeArea,
-                                             Me.Target.Y)
-                            : new Vec2Double(Me.Target.X - Constants.SafeArea < 0
-                                                 ? Me.Target.X + Constants.SafeArea
-                                                 : Me.Target.X - Constants.SafeArea,
-                                             Me.Target.Y);
+            double x;
+            if (Me.Position.X > Me.Target.X)
+            {
+                x = Me.Target.X + Constants.SafeArea > Constants.MaxXArrayTile
+                        ? Me.Target.X - Constants.SafeArea
+                        : Me.Target.X + Constants.SafeArea;
+            }
+            else
+            {
+                x = Me.Target.X - Constants.SafeArea < 0
+                        ? Me.Target.X + Constants.SafeArea
+                        : Me.Target.X - Constants.SafeArea;
+            }
+
+            var y = Measure.FindYOnGround(x, Game);
+            Me.Target = new Vec2Double(x, y);
+
             var action = new UnitAction
                          {
                              Velocity = VelocityLR(Constants.MaxVelocity),
@@ -168,12 +176,16 @@ namespace AiCup2019
 
         private static double VelocityLR(double velocity)
         {
-            if (Me.Position.X < Me.Target.X)
+            if ((int) Me.Position.X < (int) Me.Target.X)
             {
                 return velocity;
             }
+            else if ((int) Me.Position.X > (int) Me.Target.X)
+            {
+                return velocity * -1;
+            }
 
-            return velocity * -1;
+            return 0;
         }
 
         private static void SetTarget(Vec2Double target)
@@ -190,7 +202,7 @@ namespace AiCup2019
         private static bool SetJump()
         {
             if ((int) Me.Target.Y > (int) Me.Position.Y
-                || (int) Me.Target.X != (int) Me.Position.X
+                || Math.Abs(Me.Target.X - Me.Position.X) > 1
                 && (Me.OnLadder
                     || Around.WallNear
                     || !Me.OnGround))

@@ -15,13 +15,13 @@ namespace AiCup2019
             return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
         }
 
-        public static bool IsStraightVisible(CustomUnit unit1, CustomUnit unit2, Game game, Debug debug = null)
+        public static bool IsStraightVisible(CustomUnit me, CustomUnit target, Game game, Debug debug = null)
         {
             var visibleLine = new List<Tile>();
 
-            var diffX = Math.Abs(unit1.Position.X - unit2.Position.X);
-            var diffY = Math.Abs(unit1.Position.Y - unit2.Position.Y);
-            var pointsNumber = (int) GetDistance(unit1.Position, unit2.Position);
+            var diffX = Math.Abs(me.Position.X - target.Position.X);
+            var diffY = Math.Abs(me.Position.Y - target.Position.Y);
+            var pointsNumber = (int) GetDistance(me.Position, target.Position);
             var intervalX = diffX / (pointsNumber + 1);
             var intervalY = diffY / (pointsNumber + 1);
 
@@ -29,29 +29,34 @@ namespace AiCup2019
             {
                 double x = 0;
                 double y = 0;
-                if (unit1.Position.Y < unit2.Position.Y && unit1.Position.X > unit2.Position.X)
+                if (me.Position.Y < target.Position.Y && me.Position.X > target.Position.X)
                 {
-                    x = unit1.Position.X - intervalX * i;
-                    y = unit1.Position.Y + intervalY * i;
+                    x = me.Position.X - intervalX * i;
+                    y = me.Position.Y + intervalY * i;
                 }
-                else if (unit1.Position.Y > unit2.Position.Y && unit1.Position.X < unit2.Position.X)
+                else if (me.Position.Y > target.Position.Y && me.Position.X < target.Position.X)
                 {
-                    x = unit2.Position.X - intervalX * i;
-                    y = unit2.Position.Y + intervalY * i;
+                    x = target.Position.X - intervalX * i;
+                    y = target.Position.Y + intervalY * i;
                 }
-                else if (unit1.Position.Y < unit2.Position.Y && unit1.Position.X < unit2.Position.X)
+                else if (me.Position.Y < target.Position.Y && me.Position.X < target.Position.X)
                 {
-                    x = unit2.Position.X - intervalX * i;
-                    y = unit2.Position.Y - intervalY * i;
+                    x = target.Position.X - intervalX * i;
+                    y = target.Position.Y - intervalY * i;
                 }
-                else if (unit1.Position.Y > unit2.Position.Y && unit1.Position.X > unit2.Position.X)
+                else if (me.Position.Y > target.Position.Y && me.Position.X > target.Position.X)
                 {
-                    x = unit1.Position.X - intervalX * i;
-                    y = unit1.Position.Y - intervalY * i;
+                    x = me.Position.X - intervalX * i;
+                    y = me.Position.Y - intervalY * i;
                 }
 
+                // System.Numerics.Vector2.
+                // //
+                // var ang = Math.Pow(Math.Tan((Y - me.Position.Y) / (X - me.Position.X)), -1) - 
+                //           Math.Pow(Math.Tan((target.Position.Y - me.Position.Y) / (target.Position.X - me.Position.X)), -1);
+                // //
                 debug?.Draw(new CustomData.PlacedText("+",
-                                                      new Vec2Float((float) x, (float) (y + unit1.Size.Y / 2)),
+                                                      new Vec2Float((float) x, (float) (y + me.Size.Y / 2)),
                                                       TextAlignment.Center,
                                                       15,
                                                       Constants.BlueColor));
@@ -72,6 +77,20 @@ namespace AiCup2019
             }
 
             return true;
+        }
+
+        public static double FindYOnGround(double targetX, Game game)
+        {
+            for (var i = Constants.MaxYArrayTile-1; i >= 0; i--)
+            {
+                var tile = game.Level.Tiles[(int) targetX][i];
+                if (tile != Tile.Empty)
+                {
+                    return i+1;
+                }
+            }
+
+            return 0;
         }
     }
 }
