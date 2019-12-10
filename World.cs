@@ -12,6 +12,7 @@ namespace AiCup2019
         public List<EnemyUnit> Enemies { get; set; }
         public EnemyUnit NearestEnemy { get; set; }
         public List<EnemyMine> PlantedMines { get; set; }
+        public bool MinePlanted => PlantedMines.Count > 0;
         public EnemyMine NearestMine { get; set; }
         public List<EnemyBullet> Bullets { get; set; }
         public EnemyBullet NearestBullet { get; set; }

@@ -50,6 +50,12 @@ namespace AiCup2019
                 return;
             }
 
+            // if (Around.MinePlanted) // TBD
+            // {
+            //     Action.DestroyAllPlantedMines(Game, Me, Around);
+            //     return;
+            // }
+
             if (Me.RLEquiped)
             {
                 Action.ShootEmWithRL(Game, Me, Around);
@@ -117,7 +123,7 @@ namespace AiCup2019
                                                  20,
                                                  Constants.RedColor));
 
-            var visible = Measure.IsStraightVisible(Me, Around.NearestEnemy, Game, Debug);
+            var visible = Measure.IsStraightVisible(Me, Around.NearestEnemy.Position, Game, Debug);
 
             Debug.Draw(new CustomData.Line(new Vec2Float((float) Me.Position.X,
                                                          (float) Me.Position.Y + (float) Me.Size.Y / 2),

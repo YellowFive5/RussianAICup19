@@ -47,7 +47,7 @@ namespace AiCup2019
                              Jump = SetJump(),
                              JumpDown = SetJumpDown(),
                              Aim = SetAim(Around.NearestEnemy.Position),
-                             Shoot = SetShootMode(),
+                             Shoot = SetShootMode(Around.NearestEnemy.Position),
                              SwapWeapon = SetSwapWeapon(true),
                              PlantMine = SetPlantMine(false),
                              Reload = SetReload()
@@ -66,7 +66,7 @@ namespace AiCup2019
                              Jump = SetJump(),
                              JumpDown = SetJumpDown(),
                              Aim = SetAim(Around.NearestEnemy.Position),
-                             Shoot = SetShootMode(),
+                             Shoot = SetShootMode(Around.NearestEnemy.Position),
                              SwapWeapon = SetSwapWeapon(false),
                              PlantMine = SetPlantMine(false),
                              Reload = SetReload()
@@ -86,7 +86,7 @@ namespace AiCup2019
                              Jump = SetJump(),
                              JumpDown = SetJumpDown(),
                              Aim = SetAim(Around.NearestEnemy.Position),
-                             Shoot = SetShootMode(),
+                             Shoot = SetShootMode(Around.NearestEnemy.Position),
                              SwapWeapon = SetSwapWeapon(false),
                              PlantMine = SetPlantMine(false),
                              Reload = SetReload()
@@ -100,22 +100,7 @@ namespace AiCup2019
 
             SetTarget(Around.NearestEnemy.Position);
 
-            double x;
-            if (Me.Position.X > Me.Target.X)
-            {
-                x = Me.Target.X + Constants.SafeArea > Constants.MaxXArrayTile
-                        ? Me.Target.X - Constants.SafeArea
-                        : Me.Target.X + Constants.SafeArea;
-            }
-            else
-            {
-                x = Me.Target.X - Constants.SafeArea < 0
-                        ? Me.Target.X + Constants.SafeArea
-                        : Me.Target.X - Constants.SafeArea;
-            }
-
-            var y = Measure.FindYOnGround(x, Game);
-            Me.Target = new Vec2Double(x, y);
+            Me.Target = Measure.GetTargetWithSafeArea(Me.Position, Me.Target, game);
 
             var action = new UnitAction
                          {
@@ -123,12 +108,33 @@ namespace AiCup2019
                              Jump = SetJump(),
                              JumpDown = SetJumpDown(),
                              Aim = SetAim(Around.NearestEnemy.Position),
-                             Shoot = SetShootMode(),
+                             Shoot = SetShootMode(Around.NearestEnemy.Position),
                              SwapWeapon = SetSwapWeapon(false),
                              PlantMine = SetPlantMine(false),
                              Reload = SetReload()
                          };
             me.NextAction = new CustomAction(nameof(ShootEmWithRL), action);
+        }
+
+        public static void DestroyAllPlantedMines(Game game, MyUnit me, World around)
+        {
+            Set(game, me, around);
+
+            SetTarget(Around.NearestMine.Position);
+            Me.Target = Measure.GetTargetWithSafeArea(Me.Position, Me.Target, game);
+
+            var action = new UnitAction
+                         {
+                             Velocity = VelocityLR(Constants.MaxVelocity),
+                             Jump = SetJump(),
+                             JumpDown = SetJumpDown(),
+                             Aim = SetAim(Around.NearestMine.Position),
+                             Shoot = SetShootMode(Around.NearestMine.Position),
+                             SwapWeapon = SetSwapWeapon(false),
+                             PlantMine = SetPlantMine(false),
+                             Reload = SetReload()
+                         };
+            me.NextAction = new CustomAction(nameof(DestroyAllPlantedMines), action);
         }
 
         #endregion
@@ -154,7 +160,7 @@ namespace AiCup2019
             return Me.SwapWeapon;
         }
 
-        private static bool SetShootMode(bool? shoot = null)
+        private static bool SetShootMode(Vec2Double targetPosition, bool? shoot = null)
         {
             if (shoot != null)
             {
@@ -170,11 +176,12 @@ namespace AiCup2019
                     {
                         return false;
                     }
-                    return Measure.IsStraightVisible(Me, Around.NearestEnemy, Game) &&
+
+                    return Measure.IsStraightVisible(Me, targetPosition, Game) &&
                            Measure.RLAimed(Me);
                 }
 
-                return Measure.IsStraightVisible(Me, Around.NearestEnemy, Game);
+                return Measure.IsStraightVisible(Me, targetPosition, Game);
             }
 
             return Me.Shoot;
@@ -208,7 +215,7 @@ namespace AiCup2019
 
         private static Vec2Double SetAim(Vec2Double target)
         {
-            Me.Aim = new Vec2Double(Around.NearestEnemy.Position.X - Me.Position.X, Around.NearestEnemy.Position.Y - Me.Position.Y);
+            Me.Aim = new Vec2Double(target.X - Me.Position.X, target.Y - Me.Position.Y);
             return Me.Aim;
         }
 
