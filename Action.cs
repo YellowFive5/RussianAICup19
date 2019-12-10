@@ -176,11 +176,18 @@ namespace AiCup2019
 
         private static double VelocityLR(double velocity)
         {
-            if ((int) Me.Position.X < (int) Me.Target.X)
+            if ((int) Me.Position.X == (int) Me.Target.X
+                && (int) Me.Position.Y == (int) Me.Target.Y)
+            {
+                return 0;
+            }
+
+            if (Me.Position.X < Me.Target.X)
             {
                 return velocity;
             }
-            else if ((int) Me.Position.X > (int) Me.Target.X)
+
+            if (Me.Position.X > Me.Target.X)
             {
                 return velocity * -1;
             }
