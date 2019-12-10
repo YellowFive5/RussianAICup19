@@ -164,14 +164,14 @@ namespace AiCup2019
             {
                 if (Me.RLEquiped)
                 {
-                    if (Me.Health <= 50 && // not kamikaze shooting
+                    if (Me.Health <= Constants.OneShotRLHealth && // not kamikaze shooting
                         Around.NearestEnemy.Health > 70 &&
                         Measure.GetDistance(Me.Position, Around.NearestEnemy.Position) <= 5)
                     {
                         return false;
                     }
                     return Measure.IsStraightVisible(Me, Around.NearestEnemy, Game) &&
-                           Measure.RLAimed(Me, Around.NearestEnemy, Game);
+                           Measure.RLAimed(Me);
                 }
 
                 return Measure.IsStraightVisible(Me, Around.NearestEnemy, Game);

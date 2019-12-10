@@ -69,7 +69,7 @@ namespace AiCup2019
             return visible;
         }
 
-        public static bool RLAimed(MyUnit me, EnemyUnit aroundNearestEnemy, Game game)
+        public static bool RLAimed(MyUnit me)
         {
             if (me.WeaponSpread > Constants.RLFireSpread)
             {

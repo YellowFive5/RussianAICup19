@@ -9,6 +9,7 @@ namespace AiCup2019
     public static class Constants
     {
         public static int MaxHealth { get; } = 100;
+        public static int OneShotRLHealth { get; } = 50;
         public static int MaxVelocity { get; } = 10;
         public static int FullPistolAmmo { get; } = 8;
         public static int FullRifleAmmo { get; } = 20;
