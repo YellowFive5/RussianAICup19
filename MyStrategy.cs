@@ -67,7 +67,7 @@ namespace AiCup2019
                                           //  $"Nearest bullet: {(Around.NearestBullet != null ? $"{(int) Around.NearestBullet.Bullet.Position.X}/{(int) Around.NearestBullet.Bullet.Position.Y}/{(int) Around.NearestBullet.Distance}" : "-")} | " +
                                           //  $"Nearest bullet type: {(Around.NearestBullet != null ? $"{Around.NearestBullet.WeaponType}" : "-")} | " +
                                           //  $"Nearest bullet damage: {(Around.NearestBullet != null ? $"{Around.NearestBullet.Damage}" : "-")} | " +
-                                          //  $"Nearest enemy {(Around.NearestEnemy != null ? $"{(int) Around.NearestEnemy.Unit.Position.X}/{(int) Around.NearestEnemy.Unit.Position.Y}/{(int) Around.NearestEnemy.Distance}" : "-")} | " +
+                                          // $"Nearest enemy {(Around.NearestEnemy != null ? $"{(int) Around.NearestEnemy.Position.X}/{(int) Around.NearestEnemy.Position.Y}/{(int) Around.NearestEnemy.Distance}" : "-")} | " +
                                           //  $"Nearest enemy mine {(Around.NearestMine != null ? $"{(int) Around.NearestMine.Mine.Position.X}/{(int) Around.NearestMine.Mine.Position.Y}/{(int) Around.NearestMine.Distance}" : "-")} | " +
                                           //  $"Nearest weapon {(Around.NearestWeapon != null ? Around.NearestWeapon.WeaponType.ToString() : "-")} | " +
                                           //  $"Nearest weapon position {(Around.NearestWeapon != null ? $"{(int) Around.NearestWeapon.Item.Position.X}/{(int) Around.NearestWeapon.Item.Position.Y}/{(int) Around.NearestWeapon.Distance}" : "-")} | " +
@@ -78,8 +78,8 @@ namespace AiCup2019
                                           //  $"Nearest mine loot {(Around.NearestMineL != null ? $"{(int) Around.NearestMineL.Item.Position.X}/{(int) Around.NearestMineL.Item.Position.Y}/{(int) Around.NearestMineL.Distance}" : "-")} | " +
                                           //  $"Me has weapon: {Me.HasWeapon} | " +
                                           //  $"My weapon type: {(Me.HasWeapon ? $"{Me.Weapon.Value.Typ}" : "-")} | " +
-                                          //  $"My health: {Me.Health} | " +
-                                          //  $"Nearest enemy health: {Around.NearestEnemy.Health} | " +
+                                          // $"My health: {Me.Health} | " +
+                                          // $"Nearest enemy health: {Around.NearestEnemy.Health} | " +
                                           //  $"Nearest enemy has weapon: {Around.NearestEnemy.HasWeapon} | " +
                                           //  $"Nearest enemy weapon type: {(Around.NearestEnemy.HasWeapon ? $"{Around.NearestEnemy.Weapon.Value.Typ}" : "-")} | " +
                                           //  $"My magazine ammo: {(Me.HasWeapon ? $"{Me.Weapon.Value.Magazine}" : "-")} | " +
