@@ -25,7 +25,7 @@ namespace AiCup2019
         public static int MaxXArrayTile { get; set; } = 39;
         public static int MaxYArrayTile { get; set; } = 29;
         public static double RLMinSpread { get; set; } = 0.1d;
-        public static double RLFireSpread { get; set; } = 0.2d;
+        public static double RLFireSpread { get; set; } = 0.25d;
         public static double RLMaxSpread { get; set; } = 0.48d;
     }
 }
