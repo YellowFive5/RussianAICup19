@@ -210,7 +210,7 @@ namespace AiCup2019
 
         private static void SetTarget(Vec2Double target)
         {
-            Me.Target = target;
+            Me.Target = Measure.CheckSpringsNear(target, Game);
         }
 
         private static Vec2Double SetAim(Vec2Double target)

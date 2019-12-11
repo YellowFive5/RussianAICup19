@@ -113,5 +113,22 @@ namespace AiCup2019
 
             return new Vec2Double(x, y);
         }
+
+        public static Vec2Double CheckSpringsNear(Vec2Double target, Game game)
+        {
+            var tileRight = game.Level.Tiles[(int) target.X + 1][(int) target.Y];
+            var tileLeft = game.Level.Tiles[(int) target.X - 1][(int) target.Y];
+            if (tileRight == Tile.JumpPad || tileLeft == Tile.JumpPad)
+            {
+                Vec2Double fixedTarget;
+
+                fixedTarget = tileRight == Tile.JumpPad
+                                  ? new Vec2Double(target.X - 1.5, target.Y)
+                                  : new Vec2Double(target.X + 1.5, target.Y);
+                return fixedTarget;
+            }
+
+            return target;
+        }
     }
 }
