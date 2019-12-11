@@ -25,6 +25,7 @@ namespace AiCup2019
         public static void TakeBestWeapon(Game game, MyUnit me, World around)
         {
             Set(game, me, around);
+            me.NextAction = new CustomAction(nameof(TakeBestWeapon));
 
             switch (Around.BestWeapon)
             {
@@ -41,100 +42,100 @@ namespace AiCup2019
                     throw new ArgumentOutOfRangeException();
             }
 
-            var action = new UnitAction
-                         {
-                             Velocity = VelocityLR(Constants.MaxVelocity),
-                             Jump = SetJump(),
-                             JumpDown = SetJumpDown(),
-                             Aim = SetAim(Around.NearestEnemy.Position),
-                             Shoot = SetShootMode(Around.NearestEnemy.Position),
-                             SwapWeapon = SetSwapWeapon(true),
-                             PlantMine = SetPlantMine(false),
-                             Reload = SetReload()
-                         };
-            me.NextAction = new CustomAction(nameof(TakeBestWeapon), action);
+            me.NextAction.Action = new UnitAction
+                                   {
+                                       Velocity = VelocityLR(Constants.MaxVelocity),
+                                       Jump = SetJump(),
+                                       JumpDown = SetJumpDown(),
+                                       Aim = SetAim(Around.NearestEnemy.Position),
+                                       Shoot = SetShootMode(Around.NearestEnemy.Position),
+                                       SwapWeapon = SetSwapWeapon(true),
+                                       PlantMine = SetPlantMine(false),
+                                       Reload = SetReload()
+                                   };
         }
 
         public static void GoHeel(Game game, MyUnit me, World around)
         {
             Set(game, me, around);
+            me.NextAction = new CustomAction(nameof(GoHeel));
 
             SetTarget(Around.NearestHealth.Position);
-            var action = new UnitAction
-                         {
-                             Velocity = VelocityLR(Constants.MaxVelocity),
-                             Jump = SetJump(),
-                             JumpDown = SetJumpDown(),
-                             Aim = SetAim(Around.NearestEnemy.Position),
-                             Shoot = SetShootMode(Around.NearestEnemy.Position),
-                             SwapWeapon = SetSwapWeapon(false),
-                             PlantMine = SetPlantMine(false),
-                             Reload = SetReload()
-                         };
-            me.NextAction = new CustomAction(nameof(GoHeel), action);
+
+            me.NextAction.Action = new UnitAction
+                                   {
+                                       Velocity = VelocityLR(Constants.MaxVelocity),
+                                       Jump = SetJump(),
+                                       JumpDown = SetJumpDown(),
+                                       Aim = SetAim(Around.NearestEnemy.Position),
+                                       Shoot = SetShootMode(Around.NearestEnemy.Position),
+                                       SwapWeapon = SetSwapWeapon(false),
+                                       PlantMine = SetPlantMine(false),
+                                       Reload = SetReload()
+                                   };
         }
 
         public static void ShootEm(Game game, MyUnit me, World around)
         {
             Set(game, me, around);
+            me.NextAction = new CustomAction(nameof(ShootEm));
 
             SetTarget(Around.NearestEnemy.Position);
 
-            var action = new UnitAction
-                         {
-                             Velocity = VelocityLR(Constants.MaxVelocity),
-                             Jump = SetJump(),
-                             JumpDown = SetJumpDown(),
-                             Aim = SetAim(Around.NearestEnemy.Position),
-                             Shoot = SetShootMode(Around.NearestEnemy.Position),
-                             SwapWeapon = SetSwapWeapon(false),
-                             PlantMine = SetPlantMine(false),
-                             Reload = SetReload()
-                         };
-            me.NextAction = new CustomAction(nameof(ShootEm), action);
+            me.NextAction.Action = new UnitAction
+                                   {
+                                       Velocity = VelocityLR(Constants.MaxVelocity),
+                                       Jump = SetJump(),
+                                       JumpDown = SetJumpDown(),
+                                       Aim = SetAim(Around.NearestEnemy.Position),
+                                       Shoot = SetShootMode(Around.NearestEnemy.Position),
+                                       SwapWeapon = SetSwapWeapon(false),
+                                       PlantMine = SetPlantMine(false),
+                                       Reload = SetReload()
+                                   };
         }
 
         public static void ShootEmWithRL(Game game, MyUnit me, World around)
         {
             Set(game, me, around);
+            me.NextAction = new CustomAction(nameof(ShootEmWithRL));
 
             SetTarget(Around.NearestEnemy.Position);
 
             Me.Target = Measure.GetTargetWithSafeArea(Me.Position, Me.Target, game);
 
-            var action = new UnitAction
-                         {
-                             Velocity = VelocityLR(Constants.MaxVelocity),
-                             Jump = SetJump(),
-                             JumpDown = SetJumpDown(),
-                             Aim = SetAim(Around.NearestEnemy.Position),
-                             Shoot = SetShootMode(Around.NearestEnemy.Position),
-                             SwapWeapon = SetSwapWeapon(false),
-                             PlantMine = SetPlantMine(false),
-                             Reload = SetReload()
-                         };
-            me.NextAction = new CustomAction(nameof(ShootEmWithRL), action);
+            me.NextAction.Action = new UnitAction
+                                   {
+                                       Velocity = VelocityLR(Constants.MaxVelocity),
+                                       Jump = SetJump(),
+                                       JumpDown = SetJumpDown(),
+                                       Aim = SetAim(Around.NearestEnemy.Position),
+                                       Shoot = SetShootMode(Around.NearestEnemy.Position),
+                                       SwapWeapon = SetSwapWeapon(false),
+                                       PlantMine = SetPlantMine(false),
+                                       Reload = SetReload()
+                                   };
         }
 
         public static void DestroyAllPlantedMines(Game game, MyUnit me, World around)
         {
             Set(game, me, around);
+            me.NextAction = new CustomAction(nameof(DestroyAllPlantedMines));
 
             SetTarget(Around.NearestMine.Position);
             Me.Target = Measure.GetTargetWithSafeArea(Me.Position, Me.Target, game);
 
-            var action = new UnitAction
-                         {
-                             Velocity = VelocityLR(Constants.MaxVelocity),
-                             Jump = SetJump(),
-                             JumpDown = SetJumpDown(),
-                             Aim = SetAim(Around.NearestMine.Position),
-                             Shoot = SetShootMode(Around.NearestMine.Position),
-                             SwapWeapon = SetSwapWeapon(false),
-                             PlantMine = SetPlantMine(false),
-                             Reload = SetReload()
-                         };
-            me.NextAction = new CustomAction(nameof(DestroyAllPlantedMines), action);
+            me.NextAction.Action = new UnitAction
+                                   {
+                                       Velocity = VelocityLR(Constants.MaxVelocity),
+                                       Jump = SetJump(),
+                                       JumpDown = SetJumpDown(),
+                                       Aim = SetAim(Around.NearestMine.Position),
+                                       Shoot = SetShootMode(Around.NearestMine.Position),
+                                       SwapWeapon = SetSwapWeapon(false),
+                                       PlantMine = SetPlantMine(false),
+                                       Reload = SetReload()
+                                   };
         }
 
         #endregion
@@ -226,6 +227,12 @@ namespace AiCup2019
                 && (Me.OnLadder
                     || Around.WallNear
                     || !Me.OnGround))
+            {
+                Me.Jump = true;
+            }
+            else if (Me.NextAction.Name != nameof(TakeBestWeapon) &&
+                     Me.NextAction.Name != nameof(GoHeel) &&
+                     !Measure.IsStraightVisible(Me, Around.NearestEnemy.Position, Game))
             {
                 Me.Jump = true;
             }

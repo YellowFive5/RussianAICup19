@@ -25,29 +25,61 @@ namespace AiCup2019
             var intervalX = diffX / (pointsNumber + 1);
             var intervalY = diffY / (pointsNumber + 1);
 
+
             for (var i = 1; i <= pointsNumber; i++)
             {
                 double x = 0;
                 double y = 0;
-                if (me.Position.Y < target.Y && me.Position.X > target.X)
+                var meX = me.Position.X;
+                var meY = me.Position.Y + 0.9;
+                var tX = target.X;
+                var tY = target.Y + 0.9;
+
+                if (meY < tY && meX > tX)
                 {
-                    x = me.Position.X - intervalX * i;
-                    y = me.Position.Y + intervalY * i;
+                    x = meX - intervalX * i;
+                    y = meY + intervalY * i;
                 }
-                else if (me.Position.Y > target.Y && me.Position.X < target.X)
+                else if (meY > tY && meX < tX)
                 {
-                    x = target.X - intervalX * i;
-                    y = target.Y + intervalY * i;
+                    x = tX - intervalX * i;
+                    y = tY + intervalY * i;
                 }
-                else if (me.Position.Y < target.Y && me.Position.X < target.X)
+                else if (meY < tY && meX < tX)
                 {
-                    x = target.X - intervalX * i;
-                    y = target.Y - intervalY * i;
+                    x = tX - intervalX * i;
+                    y = tY - intervalY * i;
                 }
-                else if (me.Position.Y > target.Y && me.Position.X > target.X)
+                else if (meY > tY && meX > tX)
                 {
-                    x = me.Position.X - intervalX * i;
-                    y = me.Position.Y - intervalY * i;
+                    x = meX - intervalX * i;
+                    y = meY - intervalY * i;
+                }
+                else if (meY == tY)
+                {
+                    if (meX > tX)
+                    {
+                        x = meX - intervalX * i;
+                    }
+                    else
+                    {
+                        x = meX + intervalX * i;
+                    }
+
+                    y = meY;
+                }
+                else if (meX == tX)
+                {
+                    if (meY > tY)
+                    {
+                        y = meY - intervalY * i;
+                    }
+                    else
+                    {
+                        y = meY + intervalY * i;
+                    }
+
+                    x = meX;
                 }
 
                 // System.Numerics.Vector2.
@@ -55,8 +87,9 @@ namespace AiCup2019
                 // var ang = Math.Pow(Math.Tan((Y - me.Position.Y) / (X - me.Position.X)), -1) - 
                 //           Math.Pow(Math.Tan((target.Position.Y - me.Position.Y) / (target.Position.X - me.Position.X)), -1);
                 // //
+
                 debug?.Draw(new CustomData.PlacedText("+",
-                                                      new Vec2Float((float) x, (float) (y + me.Size.Y / 2)),
+                                                      new Vec2Float((float) x, (float) y),
                                                       TextAlignment.Center,
                                                       15,
                                                       Constants.BlueColor));
@@ -123,8 +156,8 @@ namespace AiCup2019
                 Vec2Double fixedTarget;
 
                 fixedTarget = tileRight == Tile.JumpPad
-                                  ? new Vec2Double(target.X - 1.5, target.Y)
-                                  : new Vec2Double(target.X + 1.5, target.Y);
+                                  ? new Vec2Double(target.X - 0.5, target.Y)
+                                  : new Vec2Double(target.X + 0.5, target.Y);
                 return fixedTarget;
             }
 

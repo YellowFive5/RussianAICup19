@@ -8,13 +8,13 @@ namespace AiCup2019
 {
     public class CustomAction
     {
-        public UnitAction Action { get; }
+        public UnitAction Action { get; set; }
         public string Name { get; }
 
-        public CustomAction(string name, UnitAction action)
+        public CustomAction(string name)
         {
             Name = name;
-            Action = action;
+            Action = new UnitAction();
         }
 
         public CustomAction()
