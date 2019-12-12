@@ -27,5 +27,6 @@ namespace AiCup2019
         public static double RLMinSpread { get; set; } = 0.1d;
         public static double RLFireSpread { get; set; } = 0.25d;
         public static double RLMaxSpread { get; set; } = 0.48d;
+        public static int SaveAreaRays { get; set; } = 5;
     }
 }

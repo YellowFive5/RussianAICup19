@@ -178,8 +178,13 @@ namespace AiCup2019
                         return false;
                     }
 
-                    return Measure.IsStraightVisible(Me, targetPosition, Game) &&
-                           Measure.RLAimed(Me);
+                    if (Measure.GetDistance(Me.Position, Around.NearestEnemy.Position) <= 3)
+                    {
+                        return true;
+                    }
+
+                    return Measure.RLAimed(Me, targetPosition, Game) &&
+                           Measure.IsStraightVisible(Me, targetPosition, Game);
                 }
 
                 return Measure.IsStraightVisible(Me, targetPosition, Game);
@@ -192,8 +197,8 @@ namespace AiCup2019
         {
             double value = 0;
 
-            if ((int) Me.Position.X == (int) Me.Target.X
-                && (int) Me.Position.Y == (int) Me.Target.Y)
+            if (Me.Position.X == Me.Target.X
+                && Me.Position.Y == Me.Target.Y)
             {
                 value = 0;
             }

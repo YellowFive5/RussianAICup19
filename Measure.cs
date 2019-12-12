@@ -25,13 +25,12 @@ namespace AiCup2019
             var intervalX = diffX / (pointsNumber + 1);
             var intervalY = diffY / (pointsNumber + 1);
 
-
             for (var i = 1; i <= pointsNumber; i++)
             {
                 double x = 0;
                 double y = 0;
                 var meX = me.Position.X;
-                var meY = me.Position.Y + 0.9;
+                var meY = me.Position.Y;
                 var tX = target.X;
                 var tY = target.Y + 0.9;
 
@@ -82,19 +81,13 @@ namespace AiCup2019
                     x = meX;
                 }
 
-                // System.Numerics.Vector2.
-                // //
-                // var ang = Math.Pow(Math.Tan((Y - me.Position.Y) / (X - me.Position.X)), -1) - 
-                //           Math.Pow(Math.Tan((target.Position.Y - me.Position.Y) / (target.Position.X - me.Position.X)), -1);
-                // //
-
                 debug?.Draw(new CustomData.PlacedText("+",
-                                                      new Vec2Float((float) x, (float) y),
+                                                      new Vec2Float((int) Math.Round(x), (int) Math.Round(y)),
                                                       TextAlignment.Center,
                                                       15,
                                                       Constants.BlueColor));
 
-                visibleLine.Add(game.Level.Tiles[(int) x][(int) y]);
+                visibleLine.Add(game.Level.Tiles[(int) Math.Round(x)][(int) Math.Round(y)]);
             }
 
             var visible = !visibleLine.Exists(x => x == Tile.Wall);
@@ -102,14 +95,108 @@ namespace AiCup2019
             return visible;
         }
 
-        public static bool RLAimed(MyUnit me)
+        public static bool RLAimed(MyUnit me, Vec2Double target, Game game, Debug debug = null)
         {
-            if (me.WeaponSpread > Constants.RLFireSpread)
+            var Ax = me.Position.X;
+            var Ay = me.Position.Y;
+            var Bx = target.X;
+            var By = target.Y + 0.9;
+            var angle1 = me.WeaponSpread + Math.Atan2(By - Ay, Bx - Ax);
+            var point1 = new Vec2Double(Ax + Math.Cos(angle1) * Constants.SaveAreaRays,
+                                        Ay + Math.Sin(angle1) * Constants.SaveAreaRays);
+            var angle2 = -me.WeaponSpread + Math.Atan2(By - Ay, Bx - Ax);
+            var point2 = new Vec2Double(Ax + Math.Cos(angle2) * Constants.SaveAreaRays,
+                                        Ay + Math.Sin(angle2) * Constants.SaveAreaRays);
+            var list = new List<Vec2Double>
+                       {
+                           point1, point2
+                       };
+
+            var visibleLine = new List<Tile>();
+
+            foreach (var point in list)
             {
-                return false;
+                var diffX = Math.Abs(me.Position.X - point.X);
+                var diffY = Math.Abs(me.Position.Y - point.Y);
+                var pointsNumber = (int) GetDistance(me.Position, point);
+                var intervalX = diffX / (pointsNumber + 1);
+                var intervalY = diffY / (pointsNumber + 1);
+
+                for (var i = 1; i <= pointsNumber; i++)
+                {
+                    double x = 0;
+                    double y = 0;
+                    var meX = me.Position.X;
+                    var meY = me.Position.Y;
+                    var tX = point.X;
+                    var tY = point.Y;
+
+                    if (meY < tY && meX > tX)
+                    {
+                        x = meX - intervalX * i;
+                        y = meY + intervalY * i;
+                    }
+                    else if (meY > tY && meX < tX)
+                    {
+                        x = tX - intervalX * i;
+                        y = tY + intervalY * i;
+                    }
+                    else if (meY < tY && meX < tX)
+                    {
+                        x = tX - intervalX * i;
+                        y = tY - intervalY * i;
+                    }
+                    else if (meY > tY && meX > tX)
+                    {
+                        x = meX - intervalX * i;
+                        y = meY - intervalY * i;
+                    }
+                    else if (meY == tY)
+                    {
+                        if (meX > tX)
+                        {
+                            x = meX - intervalX * i;
+                        }
+                        else
+                        {
+                            x = meX + intervalX * i;
+                        }
+
+                        y = meY;
+                    }
+                    else if (meX == tX)
+                    {
+                        if (meY > tY)
+                        {
+                            y = meY - intervalY * i;
+                        }
+                        else
+                        {
+                            y = meY + intervalY * i;
+                        }
+
+                        x = meX;
+                    }
+
+                    var tileX = (int) Math.Round(x) > Constants.MaxXArrayTile
+                                    ? Constants.MaxXArrayTile
+                                    : (int) Math.Round(x);
+                    var tileY = (int) Math.Round(y) > Constants.MaxYArrayTile
+                                    ? Constants.MaxYArrayTile
+                                    : (int) Math.Round(y);
+                    debug?.Draw(new CustomData.PlacedText("+",
+                                                          new Vec2Float(tileX, tileY),
+                                                          TextAlignment.Center,
+                                                          15,
+                                                          Constants.RedColor));
+
+                    visibleLine.Add(game.Level.Tiles[tileX][tileY]);
+                }
             }
 
-            return true;
+            var visible = !visibleLine.Exists(x => x == Tile.Wall);
+
+            return visible;
         }
 
         public static double FindYOnGround(double targetX, Game game)
