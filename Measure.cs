@@ -140,6 +140,10 @@ namespace AiCup2019
                 x = meTarget.X - Constants.SafeArea < 0
                         ? meTarget.X + Constants.SafeArea
                         : meTarget.X - Constants.SafeArea;
+                if (x < 1)
+                {
+                    x = 1;
+                }
             }
 
             var y = FindYOnGround(x, game);

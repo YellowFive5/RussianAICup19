@@ -190,23 +190,23 @@ namespace AiCup2019
 
         private static double VelocityLR(double velocity)
         {
+            double value = 0;
+
             if ((int) Me.Position.X == (int) Me.Target.X
                 && (int) Me.Position.Y == (int) Me.Target.Y)
             {
-                return 0;
+                value = 0;
             }
-
-            if (Me.Position.X < Me.Target.X)
+            else if (Me.Position.X < Me.Target.X)
             {
-                return velocity;
+                value = velocity;
             }
-
-            if (Me.Position.X > Me.Target.X)
+            else if (Me.Position.X > Me.Target.X)
             {
-                return velocity * -1;
+                value = velocity * -1;
             }
 
-            return 0;
+            return value;
         }
 
         private static void SetTarget(Vec2Double target)
@@ -233,6 +233,11 @@ namespace AiCup2019
             else if (Me.NextAction.Name != nameof(TakeBestWeapon) &&
                      Me.NextAction.Name != nameof(GoHeel) &&
                      !Measure.IsStraightVisible(Me, Around.NearestEnemy.Position, Game))
+            {
+                Me.Jump = true;
+            }
+            else if (Me.NextAction.Name == nameof(ShootEmWithRL) &&
+                     Measure.IsStraightVisible(Me, Around.NearestEnemy.Position, Game))
             {
                 Me.Jump = true;
             }
