@@ -178,9 +178,9 @@ namespace AiCup2019
                         return false;
                     }
 
-                    if (Measure.GetDistance(Me.Position, Around.NearestEnemy.Position) <= 3)
+                    if (Measure.GetDistance(Me.Position, Around.NearestEnemy.Position) <= 5)
                     {
-                        return true;
+                        return Measure.IsStraightVisible(Me, targetPosition, Game);
                     }
 
                     return Measure.RLAimed(Me, targetPosition, Game) &&
