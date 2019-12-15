@@ -29,5 +29,13 @@ namespace AiCup2019
         public JumpState JumpState => Man.JumpState;
         public bool UnderPlatform { get; set; }
         public double WeaponSpread => Weapon?.Spread ?? 0;
+
+        public bool OnJump => Man.JumpState.Speed != 0
+                              && !Man.OnGround
+                              && !Man.OnLadder;
+
+        public bool OnDown => Man.JumpState.Speed == 0
+                              && !Man.OnGround
+                              && !Man.OnLadder;
     }
 }

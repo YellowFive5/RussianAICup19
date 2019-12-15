@@ -12,12 +12,14 @@ namespace AiCup2019
         private static Game Game;
         private static MyUnit Me;
         private static World Around;
+        private static Debug Debug;
 
-        private static void Set(Game game, MyUnit me, World around)
+        private static void Set(Game game, MyUnit me, World around, Debug debug = null)
         {
             Game = game;
             Me = me;
             Around = around;
+            Debug = debug;
         }
 
         #region Actions
@@ -95,9 +97,9 @@ namespace AiCup2019
                                    };
         }
 
-        public static void ShootEmWithRL(Game game, MyUnit me, World around)
+        public static void ShootEmWithRL(Game game, MyUnit me, World around, Debug debug)
         {
-            Set(game, me, around);
+            Set(game, me, around,debug);
             me.NextAction = new CustomAction(nameof(ShootEmWithRL));
 
             SetTarget(Around.NearestEnemy.Position);
@@ -110,7 +112,7 @@ namespace AiCup2019
                                        Jump = SetJump(),
                                        JumpDown = SetJumpDown(),
                                        Aim = SetAim(Around.NearestEnemy.Position),
-                                       Shoot = SetShootMode(Around.NearestEnemy.Position),
+                                       Shoot = SetShootMode(Around.NearestEnemy.Position,Debug),
                                        SwapWeapon = SetSwapWeapon(false),
                                        PlantMine = SetPlantMine(false),
                                        Reload = SetReload()
@@ -161,7 +163,7 @@ namespace AiCup2019
             return Me.SwapWeapon;
         }
 
-        private static bool SetShootMode(Vec2Double targetPosition, bool? shoot = null)
+        private static bool SetShootMode(Vec2Double targetPosition, Debug debug = null, bool? shoot = null)
         {
             if (shoot != null)
             {
@@ -183,8 +185,8 @@ namespace AiCup2019
                         return Measure.IsStraightVisible(Me, targetPosition, Game);
                     }
 
-                    return Measure.RLAimed(Me, targetPosition, Game) &&
-                           Measure.IsStraightVisible(Me, targetPosition, Game);
+                    return Measure.RLAimed(Me, targetPosition, Game, Debug) &
+                           Measure.IsStraightVisible(Me, targetPosition, Game, Debug);
                 }
 
                 return Measure.IsStraightVisible(Me, targetPosition, Game);

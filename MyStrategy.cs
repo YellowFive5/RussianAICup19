@@ -58,7 +58,7 @@ namespace AiCup2019
 
             if (Me.RLEquiped)
             {
-                Action.ShootEmWithRL(Game, Me, Around);
+                Action.ShootEmWithRL(Game, Me, Around, Debug);
             }
             else
             {
@@ -124,18 +124,18 @@ namespace AiCup2019
                                                  20,
                                                  Constants.RedColor));
 
-            var visibleAndAimed =
-                Measure.RLAimed(Me, Around.NearestEnemy.Position, Game, Debug) &
-                Measure.IsStraightVisible(Me, Around.NearestEnemy.Position, Game, Debug);
+            //var visibleAndAimed =
+            //    Measure.RLAimed(Me, Around.NearestEnemy.Position, Game, Debug) &
+            //    Measure.IsStraightVisible(Me, Around.NearestEnemy.Position, Game, Debug);
 
-            Debug.Draw(new CustomData.Line(new Vec2Float((float) Me.Position.X,
-                                                         (float) Me.Position.Y + (float) Me.Size.Y / 2),
-                                           new Vec2Float((float) Around.NearestEnemy.Position.X,
-                                                         (float) Around.NearestEnemy.Position.Y + (float) Around.NearestEnemy.Size.Y / 2),
-                                           0.1f,
-                                           visibleAndAimed
-                                               ? Constants.GreenColor
-                                               : Constants.RedColor));
+            //Debug.Draw(new CustomData.Line(new Vec2Float((float) Me.Position.X,
+            //                                             (float) Me.Position.Y + (float) Me.Size.Y / 2),
+            //                               new Vec2Float((float) Around.NearestEnemy.Position.X,
+            //                                             (float) Around.NearestEnemy.Position.Y + (float) Around.NearestEnemy.Size.Y / 2),
+            //                               0.1f,
+            //                               visibleAndAimed
+            //                                   ? Constants.GreenColor
+            //                                   : Constants.RedColor));
         }
     }
 }
