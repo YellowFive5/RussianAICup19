@@ -50,12 +50,6 @@ namespace AiCup2019
                 return;
             }
 
-            // if (Around.MinePlanted) // TBD
-            // {
-            //     Action.DestroyAllPlantedMines(Game, Me, Around);
-            //     return;
-            // }
-
             if (Me.RLEquiped)
             {
                 Action.ShootEmWithRL(Game, Me, Around, Debug);

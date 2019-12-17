@@ -119,27 +119,6 @@ namespace AiCup2019
                                    };
         }
 
-        public static void DestroyAllPlantedMines(Game game, MyUnit me, World around)
-        {
-            Set(game, me, around);
-            me.NextAction = new CustomAction(nameof(DestroyAllPlantedMines));
-
-            SetTarget(Around.NearestMine.Position);
-            Me.Target = Measure.GetTargetWithSafeArea(Me.Position, Me.Target, game);
-
-            me.NextAction.Action = new UnitAction
-                                   {
-                                       Velocity = VelocityLR(Constants.MaxVelocity),
-                                       Jump = SetJump(),
-                                       JumpDown = SetJumpDown(),
-                                       Aim = SetAim(Around.NearestMine.Position),
-                                       Shoot = SetShootMode(Around.NearestMine.Position),
-                                       SwapWeapon = SetSwapWeapon(false),
-                                       PlantMine = SetPlantMine(false),
-                                       Reload = SetReload()
-                                   };
-        }
-
         #endregion
 
         #region Setters
