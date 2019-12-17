@@ -8,6 +8,16 @@ namespace AiCup2019
 {
     public class MyUnit : CustomUnit
     {
+        public MyUnit()
+        {
+        }
+
+        public MyUnit(Unit unit, MyUnit myUnit)
+        {
+            Man = unit;
+            Distance = Measure.GetDistance(myUnit.Position, unit.Position);
+        }
+
         public Vec2Double Target { get; set; }
         public bool NeedHeel => Health <= 70;
         public bool BestWeaponTaken { get; set; }

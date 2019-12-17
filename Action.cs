@@ -99,7 +99,7 @@ namespace AiCup2019
 
         public static void ShootEmWithRL(Game game, MyUnit me, World around, Debug debug)
         {
-            Set(game, me, around,debug);
+            Set(game, me, around, debug);
             me.NextAction = new CustomAction(nameof(ShootEmWithRL));
 
             SetTarget(Around.NearestEnemy.Position);
@@ -112,7 +112,7 @@ namespace AiCup2019
                                        Jump = SetJump(),
                                        JumpDown = SetJumpDown(),
                                        Aim = SetAim(Around.NearestEnemy.Position),
-                                       Shoot = SetShootMode(Around.NearestEnemy.Position,Debug),
+                                       Shoot = SetShootMode(Around.NearestEnemy.Position, Debug),
                                        SwapWeapon = SetSwapWeapon(false),
                                        PlantMine = SetPlantMine(false),
                                        Reload = SetReload()

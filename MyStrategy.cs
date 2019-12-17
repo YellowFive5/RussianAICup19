@@ -109,7 +109,9 @@ namespace AiCup2019
                                           // $"BestWeapon taken: {Me.BestWeaponTaken}" +
                                           // $"MyWeaponSpread: {Me.WeaponSpread}" +
                                           // $"EnemyWeaponSpread: {Around.NearestEnemy.WeaponSpread}" +
-                                          $"Distance: {Measure.GetDistance(Me.Position,Around.NearestEnemy.Position)}" +
+                                          //$"Distance to teammate: {Measure.GetDistance(Me.Position,Around.Teammate.Position)}" +
+                                          $"TeammateX: {Around.Teammate.Position.X}" +
+                                          $"TeammateY: {Around.Teammate.Position.Y}" +
                                           ""));
 
             Debug.Draw(new CustomData.PlacedText("+",

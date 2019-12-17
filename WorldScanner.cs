@@ -23,9 +23,22 @@ namespace AiCup2019
 
             ScanLoot();
             ScanNearestEnemy();
+            ScanTeammate();
             ScanNearestMine();
             ScanBullets();
             ScanTiles();
+        }
+
+        private static void ScanTeammate()
+        {
+            foreach (var unit in Game.Units)
+            {
+                if (unit.PlayerId == Me.Man.PlayerId
+                    && unit.Id != Me.Man.Id)
+                {
+                    Around.Teammate = new MyUnit(unit, Me);
+                }
+            }
         }
 
         private static void ScanTiles()

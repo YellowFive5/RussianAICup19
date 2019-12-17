@@ -9,6 +9,7 @@ namespace AiCup2019
 {
     public class World
     {
+        public MyUnit Teammate { get; set; }
         public List<EnemyUnit> Enemies { get; set; }
         public EnemyUnit NearestEnemy { get; set; }
         public List<EnemyMine> PlantedMines { get; set; }
