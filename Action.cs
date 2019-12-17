@@ -98,6 +98,8 @@ namespace AiCup2019
 
             SetTarget(Around.NearestEnemy.Position);
 
+            Me.Target = Measure.GetTargetWithSafeArea(Constants.RifleSafeArea, Me.Position, Me.Target, game);
+
             me.NextAction.Action = new UnitAction
                                    {
                                        Velocity = VelocityLR(Constants.MaxVelocity),
@@ -118,7 +120,7 @@ namespace AiCup2019
 
             SetTarget(Around.NearestEnemy.Position);
 
-            Me.Target = Measure.GetTargetWithSafeArea(Me.Position, Me.Target, game);
+            Me.Target = Measure.GetTargetWithSafeArea(Constants.RLSafeArea, Me.Position, Me.Target, game);
 
             me.NextAction.Action = new UnitAction
                                    {

@@ -225,20 +225,20 @@ namespace AiCup2019
             return 0;
         }
 
-        public static Vec2Double GetTargetWithSafeArea(Vec2Double mePosition, Vec2Double meTarget, Game game)
+        public static Vec2Double GetTargetWithSafeArea(int saveArea ,Vec2Double mePosition, Vec2Double meTarget, Game game)
         {
             double x;
             if (mePosition.X > meTarget.X)
             {
-                x = meTarget.X + Constants.SafeArea > Constants.MaxXArrayTile
-                        ? meTarget.X - Constants.SafeArea
-                        : meTarget.X + Constants.SafeArea;
+                x = meTarget.X + saveArea > Constants.MaxXArrayTile
+                        ? meTarget.X - saveArea
+                        : meTarget.X + saveArea;
             }
             else
             {
-                x = meTarget.X - Constants.SafeArea < 0
-                        ? meTarget.X + Constants.SafeArea
-                        : meTarget.X - Constants.SafeArea;
+                x = meTarget.X - saveArea < 0
+                        ? meTarget.X + saveArea
+                        : meTarget.X - saveArea;
                 if (x < 1)
                 {
                     x = 1;
