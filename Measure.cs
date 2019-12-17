@@ -81,13 +81,22 @@ namespace AiCup2019
                     x = meX;
                 }
 
+                var tileX = (int)Math.Round(x) > Constants.MaxXArrayTile
+                    ? Constants.MaxXArrayTile
+                    : (int)Math.Round(x);
+                var tileY = (int)Math.Round(y) > Constants.MaxYArrayTile
+                    ? Constants.MaxYArrayTile
+                    : (int)Math.Round(y);
+                tileX = tileX < 0 ? 0 : tileX;
+                tileY = tileY < 0 ? 0 : tileY;
+
                 debug?.Draw(new CustomData.PlacedText("+",
-                                                      new Vec2Float((int) Math.Round(x), (int) Math.Round(y)),
+                                                      new Vec2Float(tileX, tileY),
                                                       TextAlignment.Center,
                                                       15,
                                                       Constants.BlueColor));
 
-                visibleLine.Add(game.Level.Tiles[(int) Math.Round(x)][(int) Math.Round(y)]);
+                visibleLine.Add(game.Level.Tiles[tileX][tileY]);
             }
 
             var visible = !visibleLine.Exists(x => x == Tile.Wall);
@@ -184,6 +193,9 @@ namespace AiCup2019
                     var tileY = (int) Math.Round(y) > Constants.MaxYArrayTile
                                     ? Constants.MaxYArrayTile
                                     : (int) Math.Round(y);
+                    tileX = tileX < 0 ? 0 : tileX; 
+                    tileY = tileY < 0 ? 0 : tileY; 
+
                     debug?.Draw(new CustomData.PlacedText("+",
                                                           new Vec2Float(tileX, tileY),
                                                           TextAlignment.Center,
