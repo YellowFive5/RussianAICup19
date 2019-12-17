@@ -175,6 +175,11 @@ namespace AiCup2019
                         return false;
                     }
 
+                    if (Measure.GetDistance(Around.Teammate.Position, Around.NearestEnemy.Position) <= 5) // no friedlyfire shooting
+                    {
+                        return false;
+                    }
+
                     if (Measure.GetDistance(Me.Position, Around.NearestEnemy.Position) <= 5)
                     {
                         return Measure.IsStraightVisible(Me, targetPosition, Game);
