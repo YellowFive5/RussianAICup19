@@ -6,20 +6,25 @@ using AiCup2019.Model;
 
 namespace AiCup2019
 {
+    public enum Role
+    {
+        NotDefined,
+        Rocketman,
+        Rifleman
+    }
+
     public class MyUnit : CustomUnit
     {
-        public MyUnit()
-        {
-        }
-
-        public MyUnit(Unit unit, MyUnit myUnit)
+        public MyUnit(Unit unit)
         {
             Man = unit;
-            Distance = Measure.GetDistance(myUnit.Position, unit.Position);
         }
 
+
+        public Role Role = Role.NotDefined;
         public Vec2Double Target { get; set; }
         public bool NeedHeel => Health <= 70;
+        public bool RoleWeaponTaken { get; set; }
         public bool BestWeaponTaken { get; set; }
         public Vec2Double Aim { get; set; }
         public bool Jump { get; set; }

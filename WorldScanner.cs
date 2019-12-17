@@ -36,7 +36,12 @@ namespace AiCup2019
                 if (unit.PlayerId == Me.Man.PlayerId
                     && unit.Id != Me.Man.Id)
                 {
-                    Around.Teammate = new MyUnit(unit, Me);
+                    Around.Teammate = new MyUnit(unit)
+                                      {
+                                          Role = Me.Role == Role.Rocketman
+                                                     ? Role.Rifleman
+                                                     : Role.Rocketman
+                                      };
                 }
             }
         }
@@ -110,8 +115,7 @@ namespace AiCup2019
             {
                 Around.BestWeapon = WeaponType.RocketLauncher;
             }
-            else
-            if (Me.HasWeapon &&
+            else if (Me.HasWeapon &&
                      Me.Weapon.Value.Typ != WeaponType.RocketLauncher &&
                      Me.Weapon.Value.Typ != WeaponType.AssaultRifle &&
                      Around.NearestRifleExist ||
@@ -127,6 +131,20 @@ namespace AiCup2019
             }
 
             Me.BestWeaponTaken = Me.HasWeapon && Me.Weapon.Value.Typ == Around.BestWeapon;
+
+            switch (Me.Role)
+            {
+                case Role.NotDefined:
+                    break;
+                case Role.Rocketman:
+                    Me.RoleWeaponTaken = Me.HasWeapon && Me.Weapon.Value.Typ == WeaponType.RocketLauncher;
+                    break;
+                case Role.Rifleman:
+                    Me.RoleWeaponTaken = Me.HasWeapon && Me.Weapon.Value.Typ == WeaponType.AssaultRifle;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         private static void ScanNearestEnemy()

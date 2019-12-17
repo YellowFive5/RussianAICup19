@@ -10,20 +10,40 @@ namespace AiCup2019
     {
         public MyStrategy()
         {
-            Me = new MyUnit();
             Around = new World();
         }
 
         private Game Game { get; set; }
         private Debug Debug { get; set; }
-        private MyUnit Me { get; }
+        private MyUnit Me { get; set; }
         private World Around { get; }
+        private Role Player1Role { get; set; } = Role.Rocketman;
+        private Role Player2Role { get; set; } = Role.Rifleman;
+        private int Player1Id { get; set; } = 0;
+        private int Player2Id { get; set; } = 0;
 
         public UnitAction GetAction(Unit unit, Game game, Debug debug)
         {
             Game = game;
             Debug = debug;
-            Me.Man = unit;
+
+            if (Player1Id == 0)
+            {
+                Player1Id = unit.Id;
+            }
+            else if (Player2Id == 0)
+            {
+                Player2Id = unit.Id;
+            }
+
+            if (unit.Id == Player1Id)
+            {
+                Me = new MyUnit(unit) {Role = Player1Role};
+            }
+            else if (unit.Id == Player2Id)
+            {
+                Me = new MyUnit(unit) {Role = Player2Role};
+            }
 
             WorldScanner.Scan(Game, Me, Around);
 
@@ -44,9 +64,9 @@ namespace AiCup2019
                 return;
             }
 
-            if (!Me.BestWeaponTaken)
+            if (!Me.RoleWeaponTaken)
             {
-                Action.TakeBestWeapon(Game, Me, Around);
+                Action.TakeRoleWeapon(Game, Me, Around);
                 return;
             }
 
@@ -110,8 +130,10 @@ namespace AiCup2019
                                           // $"MyWeaponSpread: {Me.WeaponSpread}" +
                                           // $"EnemyWeaponSpread: {Around.NearestEnemy.WeaponSpread}" +
                                           //$"Distance to teammate: {Measure.GetDistance(Me.Position,Around.Teammate.Position)}" +
-                                          $"TeammateX: {Around.Teammate.Position.X}" +
-                                          $"TeammateY: {Around.Teammate.Position.Y}" +
+                                          //$"TeammateX: {Around.Teammate.Position.X}" +
+                                          //$"TeammateY: {Around.Teammate.Position.Y}" +
+                                          $"Me role: {Me.Role}" +
+                                          $"Teammate role: {Around.Teammate.Role}" +
                                           ""));
 
             Debug.Draw(new CustomData.PlacedText("+",

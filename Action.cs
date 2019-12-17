@@ -24,21 +24,35 @@ namespace AiCup2019
 
         #region Actions
 
-        public static void TakeBestWeapon(Game game, MyUnit me, World around)
+        public static void TakeRoleWeapon(Game game, MyUnit me, World around)
         {
             Set(game, me, around);
-            me.NextAction = new CustomAction(nameof(TakeBestWeapon));
+            me.NextAction = new CustomAction(nameof(TakeRoleWeapon));
 
-            switch (Around.BestWeapon)
+            switch (Me.Role)
             {
-                case WeaponType.Pistol:
-                    SetTarget(Around.NearestPistol.Position);
+                case Role.NotDefined:
+                    SetTarget(Around.NearestWeapon.Position);
                     break;
-                case WeaponType.AssaultRifle:
-                    SetTarget(Around.NearestRifle.Position);
+                case Role.Rocketman:
+                    if (Around.NearestRLauncherExist)
+                    {
+                        SetTarget(Around.NearestRLauncher.Position);
+                    }
+                    else if (Around.NearestRifleExist)
+                    {
+                        SetTarget(Around.NearestRifle.Position);
+                    }
+                    else
+                    {
+                        SetTarget(Around.NearestPistol.Position);
+                    }
+
                     break;
-                case WeaponType.RocketLauncher:
-                    SetTarget(Around.NearestRLauncher.Position);
+                case Role.Rifleman:
+                    SetTarget(Around.NearestRifleExist
+                                  ? Around.NearestRifle.Position
+                                  : Around.NearestPistol.Position);
                     break;
                 default:
                     throw new ArgumentOutOfRangeException();
@@ -216,7 +230,7 @@ namespace AiCup2019
             {
                 Me.Jump = true;
             }
-            else if (Me.NextAction.Name != nameof(TakeBestWeapon) &&
+            else if (Me.NextAction.Name != nameof(TakeRoleWeapon) &&
                      Me.NextAction.Name != nameof(GoHeel) &&
                      !Measure.IsStraightVisible(Me, Around.NearestEnemy.Position, Game))
             {
