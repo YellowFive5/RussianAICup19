@@ -72,7 +72,7 @@ namespace AiCup2019
 
             if (Me.RLEquiped)
             {
-                Action.ShootEmWithRL(Game, Me, Around, Debug);
+                Action.ShootEmWithRL(Game, Me, Around);
             }
             else
             {
@@ -82,7 +82,7 @@ namespace AiCup2019
 
         private void DebugWrite()
         {
-            Debug.Draw(new CustomData.Log($"" +
+            //Debug.Draw(new CustomData.Log($"" +
                                           // $"Bullets count: {Around.Bullets.Count} | " +
                                           //  $"Nearest bullet: {(Around.NearestBullet != null ? $"{(int) Around.NearestBullet.Bullet.Position.X}/{(int) Around.NearestBullet.Bullet.Position.Y}/{(int) Around.NearestBullet.Distance}" : "-")} | " +
                                           //  $"Nearest bullet type: {(Around.NearestBullet != null ? $"{Around.NearestBullet.WeaponType}" : "-")} | " +
@@ -132,15 +132,15 @@ namespace AiCup2019
                                           //$"Distance to teammate: {Measure.GetDistance(Me.Position,Around.Teammate.Position)}" +
                                           //$"TeammateX: {Around.Teammate.Position.X}" +
                                           //$"TeammateY: {Around.Teammate.Position.Y}" +
-                                          $"Me role: {Me.Role}" +
-                                          $"Teammate role: {Around.Teammate.Role}" +
-                                          ""));
+            //                              $"Me role: {Me.Role}" +
+            //                              $"Teammate role: {Around.Teammate.Role}" +
+            //                              ""));
 
-            Debug.Draw(new CustomData.PlacedText("+",
-                                                 new Vec2Float((float) Me.Target.X, (float) Me.Target.Y),
-                                                 TextAlignment.Center,
-                                                 20,
-                                                 Constants.RedColor));
+            //Debug.Draw(new CustomData.PlacedText("+",
+            //                                     new Vec2Float((float) Me.Target.X, (float) Me.Target.Y),
+            //                                     TextAlignment.Center,
+            //                                     20,
+            //                                     Constants.RedColor));
 
             //var visibleAndAimed =
             //    Measure.RLAimed(Me, Around.NearestEnemy.Position, Game, Debug) &

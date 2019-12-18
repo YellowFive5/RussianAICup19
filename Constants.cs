@@ -19,7 +19,7 @@ namespace AiCup2019
         public static int RLDamage { get; } = 30;
         public static int HealthAid { get; } = 50;
         public static int RLSafeArea { get; } = 9;
-        public static int RifleSafeArea { get; } = 7;
+        public static int RifleSafeArea { get; } = 15;
         public static ColorFloat RedColor { get; } = new ColorFloat(255, 0, 0, 255);
         public static ColorFloat GreenColor { get; } = new ColorFloat(0, 255, 0, 255);
         public static ColorFloat BlueColor { get; } = new ColorFloat(0, 0, 255, 255);
