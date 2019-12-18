@@ -15,7 +15,7 @@ namespace AiCup2019
             return Math.Sqrt(Math.Pow(a.X - b.X, 2) + Math.Pow(a.Y - b.Y, 2));
         }
 
-        public static bool IsStraightVisible(CustomUnit me, Vec2Double target, Game game, Debug debug = null)
+        public static bool IsStraightVisible(CustomUnit me, Vec2Double target, Game game, World around, Debug debug = null)
         {
             var visibleLine = new List<Tile>();
 
@@ -81,14 +81,18 @@ namespace AiCup2019
                     x = meX;
                 }
 
-                var tileX = (int)Math.Round(x) > Constants.MaxXArrayTile
-                    ? Constants.MaxXArrayTile
-                    : (int)Math.Round(x);
-                var tileY = (int)Math.Round(y) > Constants.MaxYArrayTile
-                    ? Constants.MaxYArrayTile
-                    : (int)Math.Round(y);
-                tileX = tileX < 0 ? 0 : tileX;
-                tileY = tileY < 0 ? 0 : tileY;
+                var tileX = (int) Math.Round(x) > Constants.MaxXArrayTile
+                                ? Constants.MaxXArrayTile
+                                : (int) Math.Round(x);
+                var tileY = (int) Math.Round(y) > Constants.MaxYArrayTile
+                                ? Constants.MaxYArrayTile
+                                : (int) Math.Round(y);
+                tileX = tileX < 0
+                            ? 0
+                            : tileX;
+                tileY = tileY < 0
+                            ? 0
+                            : tileY;
 
                 debug?.Draw(new CustomData.PlacedText("+",
                                                       new Vec2Float(tileX, tileY),
@@ -96,7 +100,18 @@ namespace AiCup2019
                                                       15,
                                                       Constants.BlueColor));
 
-                visibleLine.Add(game.Level.Tiles[tileX][tileY]);
+                if (around.Teammate != null)
+                {
+                    var tile = GetDistance(new Vec2Double(tileX, tileY), around.Teammate.Position) <= 1
+                                   ? Tile.Wall
+                                   : game.Level.Tiles[tileX][tileY];
+
+                    visibleLine.Add(tile);
+                }
+                else
+                {
+                    visibleLine.Add(game.Level.Tiles[tileX][tileY]);
+                }
             }
 
             var visible = !visibleLine.Exists(x => x == Tile.Wall);
@@ -193,8 +208,12 @@ namespace AiCup2019
                     var tileY = (int) Math.Round(y) > Constants.MaxYArrayTile
                                     ? Constants.MaxYArrayTile
                                     : (int) Math.Round(y);
-                    tileX = tileX < 0 ? 0 : tileX; 
-                    tileY = tileY < 0 ? 0 : tileY; 
+                    tileX = tileX < 0
+                                ? 0
+                                : tileX;
+                    tileY = tileY < 0
+                                ? 0
+                                : tileY;
 
                     debug?.Draw(new CustomData.PlacedText("+",
                                                           new Vec2Float(tileX, tileY),
@@ -225,7 +244,7 @@ namespace AiCup2019
             return 0;
         }
 
-        public static Vec2Double GetTargetWithSafeArea(int saveArea ,Vec2Double mePosition, Vec2Double meTarget, Game game)
+        public static Vec2Double GetTargetWithSafeArea(int saveArea, Vec2Double mePosition, Vec2Double meTarget, Game game)
         {
             double x;
             if (mePosition.X > meTarget.X)

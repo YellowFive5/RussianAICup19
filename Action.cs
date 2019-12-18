@@ -91,9 +91,9 @@ namespace AiCup2019
                                    };
         }
 
-        public static void ShootEm(Game game, MyUnit me, World around)
+        public static void ShootEm(Game game, MyUnit me, World around, Debug debug = null)
         {
-            Set(game, me, around);
+            Set(game, me, around, debug);
             me.NextAction = new CustomAction(nameof(ShootEm));
 
             SetTarget(Around.NearestEnemy.Position);
@@ -106,16 +106,16 @@ namespace AiCup2019
                                        Jump = SetJump(),
                                        JumpDown = SetJumpDown(),
                                        Aim = SetAim(Around.NearestEnemy.Position),
-                                       Shoot = SetShootMode(Around.NearestEnemy.Position),
+                                       Shoot = SetShootMode(Around.NearestEnemy.Position,Debug),
                                        SwapWeapon = SetSwapWeapon(false),
                                        PlantMine = SetPlantMine(false),
                                        Reload = SetReload()
                                    };
         }
 
-        public static void ShootEmWithRL(Game game, MyUnit me, World around)
+        public static void ShootEmWithRL(Game game, MyUnit me, World around, Debug debug = null)
         {
-            Set(game, me, around);
+            Set(game, me, around, debug);
             me.NextAction = new CustomAction(nameof(ShootEmWithRL));
 
             SetTarget(Around.NearestEnemy.Position);
@@ -128,7 +128,7 @@ namespace AiCup2019
                                        Jump = SetJump(),
                                        JumpDown = SetJumpDown(),
                                        Aim = SetAim(Around.NearestEnemy.Position),
-                                       Shoot = SetShootMode(Around.NearestEnemy.Position),
+                                       Shoot = SetShootMode(Around.NearestEnemy.Position, Debug),
                                        SwapWeapon = SetSwapWeapon(false),
                                        PlantMine = SetPlantMine(false),
                                        Reload = SetReload()
@@ -185,14 +185,14 @@ namespace AiCup2019
 
                     if (Measure.GetDistance(Me.Position, Around.NearestEnemy.Position) <= 5)
                     {
-                        return Measure.IsStraightVisible(Me, targetPosition, Game);
+                        return Measure.IsStraightVisible(Me, targetPosition, Game, Around);
                     }
 
                     return Measure.RLAimed(Me, targetPosition, Game, Debug) &
-                           Measure.IsStraightVisible(Me, targetPosition, Game, Debug);
+                           Measure.IsStraightVisible(Me, targetPosition, Game, Around, Debug);
                 }
 
-                return Measure.IsStraightVisible(Me, targetPosition, Game);
+                return Measure.IsStraightVisible(Me, targetPosition, Game, Around, Debug);
             }
 
             return Me.Shoot;
@@ -242,12 +242,12 @@ namespace AiCup2019
             }
             else if (Me.NextAction.Name != nameof(TakeRoleWeapon) &&
                      Me.NextAction.Name != nameof(GoHeel) &&
-                     !Measure.IsStraightVisible(Me, Around.NearestEnemy.Position, Game))
+                     !Measure.IsStraightVisible(Me, Around.NearestEnemy.Position, Game, Around))
             {
                 Me.Jump = true;
             }
             else if (Me.NextAction.Name == nameof(ShootEmWithRL) &&
-                     Measure.IsStraightVisible(Me, Around.NearestEnemy.Position, Game))
+                     Measure.IsStraightVisible(Me, Around.NearestEnemy.Position, Game, Around))
             {
                 Me.Jump = true;
             }
