@@ -102,8 +102,8 @@ namespace AiCup2019
 
                 if (around.Teammate != null)
                 {
-                    var tile = GetDistance(new Vec2Double(tileX, tileY), around.Teammate.Position) <= 1.5 ||
-                               GetDistance(new Vec2Double(tileX, tileY), new Vec2Double(around.Teammate.Position.X, around.Teammate.Position.Y + 2)) <= 1.5
+                    var tile = GetDistance(new Vec2Double(tileX, tileY), around.Teammate.Position) <= 0.7 ||
+                               GetDistance(new Vec2Double(tileX, tileY), new Vec2Double(around.Teammate.Position.X, around.Teammate.Position.Y + 1)) <= 0.7
                                    ? Tile.Wall
                                    : game.Level.Tiles[tileX][tileY];
 
