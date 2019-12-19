@@ -72,10 +72,12 @@ namespace AiCup2019
 
             if (Me.RLEquiped)
             {
+                //Action.ShootEmWithRL(Game, Me, Around, Debug);
                 Action.ShootEmWithRL(Game, Me, Around);
             }
             else
             {
+                //Action.ShootEm(Game, Me, Around, Debug);
                 Action.ShootEm(Game, Me, Around);
             }
         }

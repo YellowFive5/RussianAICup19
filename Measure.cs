@@ -102,7 +102,8 @@ namespace AiCup2019
 
                 if (around.Teammate != null)
                 {
-                    var tile = GetDistance(new Vec2Double(tileX, tileY), around.Teammate.Position) <= 1
+                    var tile = GetDistance(new Vec2Double(tileX, tileY), around.Teammate.Position) <= 1.5 ||
+                               GetDistance(new Vec2Double(tileX, tileY), new Vec2Double(around.Teammate.Position.X, around.Teammate.Position.Y + 2)) <= 1.5
                                    ? Tile.Wall
                                    : game.Level.Tiles[tileX][tileY];
 
@@ -230,7 +231,7 @@ namespace AiCup2019
             return visible;
         }
 
-        public static double FindYOnGround(double targetX, Game game)
+        private static double FindYOnGround(double targetX, Game game)
         {
             for (var i = Constants.MaxYArrayTile - 1; i >= 0; i--)
             {
